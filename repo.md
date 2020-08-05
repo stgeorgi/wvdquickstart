@@ -26,7 +26,7 @@ The folder structure in the master branch is as follows:
 * <a href="https://github.com/stgeorgi/wvdquickstart/tree/master/deploy.json" target="_blank">Deploy.json</a>: This is the ARM template used for the initial DevOps setup deployment.
 
 ### <b>ARMRunbookScripts</b>
-* <a href="https://github.com/stgeorgi/wvdquickstart/tree/master/ARMRunbookScripts/checkAzureCredentials.ps1" target="_blank">checkAzureCredentials.ps1</a>: This script makes sure that the entered Azure Admin credentials are correct. 
+* <a href="https://github.com/stgeorgi/wvdquickstart/tree/master/ARMRunbookScripts/checkCredentials.ps1" target="_blank">checkAzureCredentials.ps1</a>: This script makes sure that the entered Azure Admin credentials are correct. 
 * <a href="https://github.com/stgeorgi/wvdquickstart/tree/master/ARMRunbookScripts/configureMSI.ps1" target="_blank">configureMSI.ps1</a>: Script that configures the 'WVDServicePrincipal' managed identity in the deployment resource group to give it the *contributor* role on the subscription. This is needed to run deployment scripts in the main ARM template successfully.
 * <a href="https://github.com/stgeorgi/wvdquickstart/tree/master/ARMRunbookScripts/createDevopsPipeline.sh" target="_blank">createDevopsPipeline.sh</a>: This Azure CLI script creates and starts a DevOps pipeline in the newly created DevOps project.
 * <a href="https://github.com/stgeorgi/wvdquickstart/tree/master/ARMRunbookScripts/createServicePrincipal.ps1" target="_blank">createServicePrincipal.ps1</a>: This script creates the AAD application service principal used to create a service connection between the Azure subscription and the DevOps project. If the application already exists, this script will update the existing one with the right permissions.
