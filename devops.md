@@ -24,7 +24,7 @@ As you can see in the above image, one of the options in the Pipelines menu on t
 Because Azure DevOps and the Azure Resource Manager are separate services, DevOps needs a way to authenticate with the Azure Resource Manager for it to get permission to deploy the WVD resources. To do so, the initial ARM deployment will create something called a *Service Connection*. You can find this service connection under your project settings -> Service Connections, and by default it will be called *WVDServiceConnection*.
 
 ### <b>Understanding the Automation Pipeline</b>
-Now that you are a little more familiar of the DevOps structure, we can dive straight into our <a href="https://github.com/samvdjagt/wvdquickstart/tree/master/QS-WVD/pipeline.yml" target="_blank">automation pipeline</a> itself. However, before doing so, it's recommended to familiarize yourself with the YAML pipeline file structure first, which you can do <a href="https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=azure-devops&tabs=schema%2Cparameter-schema" target="_blank">here</a>.
+Now that you are a little more familiar of the DevOps structure, we can dive straight into our <a href="https://github.com/stgeorgi/wvdquickstart/tree/master/QS-WVD/pipeline.yml" target="_blank">automation pipeline</a> itself. However, before doing so, it's recommended to familiarize yourself with the YAML pipeline file structure first, which you can do <a href="https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=azure-devops&tabs=schema%2Cparameter-schema" target="_blank">here</a>.
 
 #### Definition
 ```
@@ -69,7 +69,7 @@ stages:
                   azurePowerShellVersion: LatestVersion
                 enabled: true
 ```
-In the first pipeline job, a script called *New-PipelineParameterSetup.ps1* is run. This particular script takes the parameters from *appliedParameters.psd1* (learn more about that file in the <a href="customize" target="_blank">Customize</a> section) and generates ARM template parameter files for the WVD deployment. For every resource that will be deployed, the script generates a parameter file using the templates in the <a href="https://github.com/samvdjagt/wvdquickstart/tree/master/QS-WVD/static/templates/pipelineinput" target="_blank">/templates/pipelineinput</a> folder.
+In the first pipeline job, a script called *New-PipelineParameterSetup.ps1* is run. This particular script takes the parameters from *appliedParameters.psd1* (learn more about that file in the <a href="customize" target="_blank">Customize</a> section) and generates ARM template parameter files for the WVD deployment. For every resource that will be deployed, the script generates a parameter file using the templates in the <a href="https://github.com/stgeorgi/wvdquickstart/tree/master/QS-WVD/static/templates/pipelineinput" target="_blank">/templates/pipelineinput</a> folder.
 ```
               - task: CopyFiles@2
                 name: Copy_FSLogix_parameters
@@ -183,7 +183,7 @@ The next part of this same job consists of a couple of *Copy* tasks. What happen
                   azurePowerShellVersion: LatestVersion
                 enabled: true
 ```
-The job above deploys the *Assets* storage account in your resource group. This storage account will be used to store the contents of the <a href="https://github.com/samvdjagt/wvdquickstart/tree/master/Uploads/WVDScripts" target="_blank">Uploads/WVDScripts</a>: This folder contains the three different custom script extensions that will be installed on the WVD Virtual Machines: Azure Files enablement, FSLogix configuration, and NotepadPlusPlus installation. It fetches these files from the WVD QuickStart GitHub repository by default. 
+The job above deploys the *Assets* storage account in your resource group. This storage account will be used to store the contents of the <a href="https://github.com/stgeorgi/wvdquickstart/tree/master/Uploads/WVDScripts" target="_blank">Uploads/WVDScripts</a>: This folder contains the three different custom script extensions that will be installed on the WVD Virtual Machines: Azure Files enablement, FSLogix configuration, and NotepadPlusPlus installation. It fetches these files from the WVD QuickStart GitHub repository by default. 
 
 #### Profiles Storage Account Deployment
 ```
