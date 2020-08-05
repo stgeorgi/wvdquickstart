@@ -1,0 +1,27 @@
+jobs:
+- job:
+  displayName: Remove Module
+  pool:
+    ${{ if eq(variables['vmImage'], '') }}:
+      name: $(poolName)
+    ${{ if eq(variables['poolName'], '') }}:
+      vmImage: $(vmImage)
+  steps:
+  - task: AzurePowerShell@4
+    displayName: 'Remove [$(moduleName)] in [$(resourceGroupName)] via [$(serviceconnection)]'
+    inputs:
+      azureSubscription: $(serviceConnection)
+      azurePowerShellVersion: LatestVersion
+      ScriptType: InlineScript
+      failOnStandardError: false
+      inline: |
+        $resourcesToRemove = Get-AzResource -Tag @{ moduleName = "$(moduleName)"; } -ResourceGroupName "$(resourceGroupName)"
+        if ($resourcesToRemove) {
+          foreach($resource in $resourcesToRemove) {
+            Write-Output "Removing resource $($resource.Name) in $(resourceGroupName)"
+            Remove-AzResource -ResourceId $resource.ResourceId -Force
+          }
+        }
+        else {
+          Write-Error ("Unable to find resources by tags [moduleName|{0}] in resource group {2}." -f "$(moduleName)", "$(resourceGroupName)")
+        }

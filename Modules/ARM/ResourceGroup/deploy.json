@@ -1,0 +1,90 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"resourceGroupName": {
+			"type": "string",
+			"metadata": {
+				"description": "Required. The name of the Resource Group"
+			}
+		},
+		"location": {
+			"type": "string",
+			"defaultValue": "[deployment().location]",
+			"metadata": {
+				"description": "Optional. Location of the Resource Group. It uses the deployment's location when not provided."
+			}
+		},
+		"lockForDeletion": {
+			"type": "bool",
+			"defaultValue": true,
+			"metadata": {
+				"description": "Optional. Switch to lock storage from deletion."
+			}
+		},
+		"tags": {
+			"type": "object",
+			"defaultValue": {
+			},
+			"metadata": {
+				"description": "Optional. Tags of the storage account resource."
+			}
+		}
+	},
+	"variables": {
+	},
+	"resources": [
+		{
+			"type": "Microsoft.Resources/resourceGroups",
+			"apiVersion": "2018-05-01",
+			"location": "[parameters('location')]",
+			"name": "[parameters('resourceGroupName')]",
+			"tags": "[parameters('tags')]",
+			"properties": {
+			}
+		},
+		{
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-05-01",
+			"name": "[concat(parameters('resourceGroupName'), '-lock')]",
+			"resourceGroup": "[parameters('resourceGroupName')]",
+			"condition": "[parameters('lockForDeletion')]",
+			"dependsOn": [
+				"[parameters('resourceGroupName')]"
+			],
+			"properties": {
+				"mode": "Incremental",
+				"template": {
+					"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+					"contentVersion": "1.0.0.0",
+					"parameters": {
+					},
+					"resources": [
+						{
+							"name": "resourceGroupDoNotDelete",
+							"type": "Microsoft.Authorization/locks",
+							"apiVersion": "2016-09-01",
+							"comments": "Resource lock on Resource Group",
+							"properties": {
+								"level": "CanNotDelete"
+							}
+						}
+					]
+				},
+				"parameters": {
+				}
+			}
+		}
+	],
+	"functions": [
+	],
+	"outputs": {
+		"resourceGroupName": {
+			"type": "string",
+			"value": "[parameters('resourceGroupName')]",
+			"metadata": {
+				"description": "The name of the Resource Group"
+			}
+		}
+	}
+}

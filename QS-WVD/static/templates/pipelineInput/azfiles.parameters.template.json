@@ -1,0 +1,13 @@
+{
+    "azfilesconfig": [
+        {
+            "enableAzureFiles": true,
+            "identityApproach": "[identityApproach]", 
+            "SubscriptionId": "[subscriptionId]",
+            "ResourceGroupName": "[resourceGroupName]",
+            "StorageAccountName": "[profilesStorageAccountName]",
+            "domainName": "[domainName]",
+            "domainJoinUsername": "[adminUsername]"
+        }
+    ]
+}

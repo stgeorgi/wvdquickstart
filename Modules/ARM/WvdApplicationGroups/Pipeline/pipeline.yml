@@ -1,0 +1,59 @@
+name: $(moduleName)
+
+variables:
+- template: /Modules/ARM/.global/global.variables.yml
+- name: moduleName
+  value: WvdApplicationGroups
+- name: removeDeployment
+  value: false
+- name: moduleVersion
+  value: 1.0.0
+- name: versionOption
+  value: patch # major, minor, patch, or custom  
+
+trigger:
+  batch: true
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - Modules/ARM/.global/*
+    - Modules/ARM/WvdApplicationGroups/*
+    exclude:
+    - readme.md
+    
+stages:
+- stage: Validation
+  jobs:
+  - template: /Modules/ARM/.global/PipelineTemplates/pipeline.jobs.validate.yml
+    parameters:
+      moduleName: '$(moduleName)'
+      resourceGroupName: '$(resourceGroupName)'
+      modulePath: '$(modulesPath)/$(moduleName)'
+      parameterFilePaths:
+      - $(modulePath)/Parameters/parameters.json
+      
+- stage: Deployment
+  jobs:
+  - template: /Modules/ARM/.global/PipelineTemplates/pipeline.jobs.deploy.yml
+    parameters:
+      moduleName: '$(moduleName)'
+      resourceGroupName: '$(resourceGroupName)'
+      modulePath: '$(modulesPath)/$(moduleName)'
+      parameterFilePaths:
+      - $(modulePath)/Parameters/parameters.json
+
+- stage: Publishing
+  jobs:
+  - template: /Modules/ARM/.global/PipelineTemplates/pipeline.jobs.publish.yml
+    parameters:
+      moduleName: ${{lower( variables.moduleName )}}
+      versionOption: $(versionOption)
+      moduleVersion: $(moduleVersion)
+
+- stage: Removal
+  dependsOn: Deployment
+  condition: and(succeededOrFailed(), eq( variables['removeDeployment'], 'true'))
+  jobs:
+  - template: /Modules/ARM/.global/PipelineTemplates/pipeline.jobs.remove.yml

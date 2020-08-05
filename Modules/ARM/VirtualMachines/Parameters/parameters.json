@@ -1,0 +1,56 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vmNames": {
+            "value": ["csazeuww100011", "csazeuww100012"]
+        },
+        "imageReference": {
+            "value": {
+                "publisher": "MicrosoftWindowsServer",
+                "offer": "WindowsServer",
+                "sku": "2016-Datacenter",
+                "version": "latest"
+            }
+        },
+        "osDisk": {
+            "value": {
+                "createOption": "fromImage",
+                "diskSizeGB": "128",
+                "managedDisk": {
+                    "storageAccountType": "Premium_LRS"
+                }
+            }
+        },
+        "adminUsername": {
+            "value": "testadminuser01"
+        },
+        "adminPassword": {
+            "reference": {
+                "keyVault": {
+                    "id": "/subscriptions/62826c76-d304-46d8-a0f6-718dbdcc536c/resourceGroups/WVD-Mgmt-Rg/providers/Microsoft.KeyVault/vaults/wvd-kvlt"
+                },
+                "secretName": "domainJoinUser-Password"
+            }
+        },
+        "domainJoinPassword": {
+            "reference": {
+                "keyVault": {
+                    "id": "/subscriptions/62826c76-d304-46d8-a0f6-718dbdcc536c/resourceGroups/WVD-Mgmt-Rg/providers/Microsoft.KeyVault/vaults/wvd-kvlt"
+                },
+                "secretName": "domainJoinUser-Password"
+            }
+        },
+        "subnetId": {
+            "value": "/subscriptions/3fb93bd4-2dd2-4b12-afba-3dd335c8154d/resourceGroups/omv-cc-valid-np-01-euw-rg-shared-np-01/providers/Microsoft.Network/virtualNetworks/omv-cc-valid-np-01-euw-vnet-test-sna-01/subnets/sub-10-0-1-0--28"
+        },
+        "dNSServers": {
+            "value": [
+                "168.63.129.16"
+            ]
+        },
+        "enableNetworkWatcherWindows": {
+            "value": true
+        }
+    }
+}

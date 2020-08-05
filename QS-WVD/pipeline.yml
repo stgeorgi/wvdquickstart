@@ -1,0 +1,562 @@
+name: WVD Deployment
+
+variables:
+- template: './variables.yml'
+
+trigger: none
+
+stages:
+- stage: SBX
+  jobs:
+  - deployment: Process_input_parameters
+    dependsOn: ''
+    environment: SBX
+    condition: and(succeeded(), true)
+    timeoutInMinutes: 120
+    pool:
+      vmImage: $(vmImage)
+    strategy:
+        runOnce:
+          deploy:
+            steps:
+              - checkout: self
+              - task: AzurePowerShell@4
+                displayName: 'Parse input parameters into parameter files'
+                name: Process_inputer_parameters_task
+                inputs:
+                  azureSubscription: $(serviceConnection)
+                  ScriptType: InlineScript
+                  inline: |
+                      Write-Verbose "Load function" -Verbose
+                      . '$(Build.Repository.LocalPath)/QS-WVD/Scripts/New-PipelineParameterSetup.ps1'
+
+                      New-PipelineParameterSetup -Verbose
+                  errorActionPreference: stop
+                  azurePowerShellVersion: LatestVersion
+                enabled: true
+              - task: CopyFiles@2
+                name: Copy_FSLogix_parameters
+                inputs:
+                  SourceFolder: '$(Build.Repository.LocalPath)/QS-WVD/Parameters'
+                  Contents: 'fslogix.parameters.json'
+                  TargetFolder: '$(Pipeline.Workspace)/s/Uploads/WVDScripts/002-FSLogix'
+                  OverWrite: true
+              - task: CopyFiles@2
+                name: Copy_Userconfig_parameters
+                inputs:
+                  SourceFolder: '$(Build.Repository.LocalPath)/QS-WVD/Parameters'
+                  Contents: 'users.parameters.json'
+                  TargetFolder: '$(Pipeline.Workspace)/s/Uploads'
+                  OverWrite: true
+              - task: CopyFiles@2
+                name: Copy_AzFiles_parameters
+                inputs:
+                  SourceFolder: '$(Build.Repository.LocalPath)/QS-WVD/Parameters'
+                  Contents: 'azfiles.parameters.json'
+                  TargetFolder: '$(Pipeline.Workspace)/s/Uploads/WVDScripts/001-AzFiles'
+                  OverWrite: true
+              - task: CopyFiles@2
+                name: Copy_Deployment_parameters
+                inputs:
+                  SourceFolder: '$(Build.Repository.LocalPath)/QS-WVD/Parameters'
+                  Contents: '**'
+                  TargetFolder: '$(Pipeline.Workspace)'
+                  OverWrite: true
+              - task: PublishPipelineArtifact@1
+                name: Publish_Deployment_Files
+                inputs:
+                  targetPath: '$(Pipeline.Workspace)'
+                  artifact: 'parameters'
+                  publishLocation: 'pipeline'
+
+  - deployment: Deploy_wvdAssetsStorage
+    dependsOn:
+    - Process_input_parameters
+    environment: SBX
+    condition:
+      and (
+          not(canceled()),
+          eq(variables['enableJobDeployAssetsStorageAccount'], true)
+      )
+    timeoutInMinutes: 120
+    pool:
+      vmImage: $(vmImage)
+    strategy:
+        runOnce:
+          deploy:
+            steps:
+              - checkout: self
+              - task: AzurePowerShell@4
+                displayName: 'Deploy module [StorageAccounts] in [$(resourceGroupName)] via [$(serviceConnection)]'
+                name: Deploy_StorageAccounts_Task
+                inputs:
+                  azureSubscription: $(serviceConnection)
+                  ScriptType: InlineScript
+                  inline: |
+                    Write-Verbose "Load function" -Verbose
+                    . '$(Build.Repository.LocalPath)/$(orchestrationFunctionsPath)/Invoke-GeneralDeployment.ps1'
+
+                    $parameterFilePath = '$(Pipeline.Workspace)/parameters/storageaccount.parameters.json'
+                    $functionInput = @{
+                      resourcegroupName             = "$(resourceGroupName)"
+                      location                      = "$(location)"
+                      moduleName                    = "StorageAccounts"
+                      moduleVersion                 = "2020-06-02"
+                      parameterFilePath             = $parameterFilePath
+                    }
+
+                    Write-Verbose "Invoke task with" -Verbose
+                    $functionInput.Keys | ForEach-Object { Write-Verbose ("PARAMETER: `t'{0}' with value '{1}'" -f $_, $functionInput[$_]) -Verbose }
+
+                    Invoke-GeneralDeployment @functionInput -Verbose
+                  errorActionPreference: stop
+                  azurePowerShellVersion: LatestVersion
+                enabled: true
+              - task: AzurePowerShell@4
+                displayName: "Trigger module [StorageAccounts] post-deployment"
+                name: PostDeploy_StorageAccounts_Task
+                inputs:
+                  azureSubscription: $(serviceConnection)
+                  ScriptType: InlineScript
+                  inline: | 
+                    Write-Verbose "Load function" -Verbose
+                    . '$(Build.Repository.LocalPath)/$(parameterFolderPath)/Scripts/Invoke-StorageAccountPostDeployment.ps1'
+
+                    $functionInput = @{
+                      orchestrationFunctionsPath = Join-Path '$(Build.Repository.LocalPath)' '$(orchestrationFunctionsPath)'
+                      wvdUploadsPath = Join-Path '$(Pipeline.Workspace)/parameters/s' '$(wvdUploadsPath)'          
+                      storageAccountName         = "$(wvdAssetsStorage)"
+                    }
+
+                    Write-Verbose "Invoke task with" -Verbose
+                    $functionInput.Keys | ForEach-Object { Write-Verbose ("PARAMETER: `t'{0}' with value '{1}'" -f $_, $functionInput[$_]) -Verbose }
+
+                    Invoke-StorageAccountPostDeployment @functionInput -Verbose
+                  errorActionPreference: stop
+                  azurePowerShellVersion: LatestVersion
+                enabled: true
+
+  - deployment: Deploy_WVDProfilesStorageAccount01
+    dependsOn:
+    - Deploy_wvdAssetsStorage
+    environment: SBX
+    condition: and(succeeded(), true)
+    timeoutInMinutes: 120
+    pool:
+      vmImage: $(vmImage)
+    strategy:
+        runOnce:
+          deploy:
+            steps:
+              - checkout: self
+              - task: AzurePowerShell@4
+                displayName: 'Deploy module [StorageAccounts] in [$(resourceGroupName)] via [$(serviceConnection)]'
+                name: Deploy_StorageAccounts_Task_01
+                inputs:
+                  azureSubscription: $(serviceConnection)
+                  ScriptType: InlineScript
+                  inline: |
+                    Write-Verbose "Load function" -Verbose
+                    . '$(Build.Repository.LocalPath)/$(orchestrationFunctionsPath)/Invoke-GeneralDeployment.ps1'
+
+                    $parameterFilePath = '$(Pipeline.Workspace)/parameters/wvdprofiles-storageaccount-01.parameters.json'
+                    $functionInput = @{
+                      resourcegroupName             = "$(resourceGroupName)"
+                      location                      = "$(location)"
+                      moduleName                    = "StorageAccounts"
+                      moduleVersion                 = "2020-06-02"
+                      parameterFilePath             = $parameterFilePath
+                    }
+                    
+                    Write-Verbose "Checking identity approach: $(identityApproach)" -Verbose
+                    If("$(identityApproach)" -eq "Azure AD DS") {
+                      Write-Verbose "Creating azureFilesIdentityBasedAuthentication object and set to AADDS" -Verbose
+                      $parameterObjects=@{
+                        azureFilesIdentityBasedAuthentication=@{
+                          directoryServiceOptions = "AADDS"
+                        }
+                      }
+                      $functionInput += @{
+                        optionalParameters=$parameterObjects
+                      }
+                    }
+
+                    Write-Verbose "Invoke task with $functionInput" -Verbose
+                    $functionInput.Keys | ForEach-Object { Write-Verbose ("PARAMETER: `t'{0}' with value '{1}'" -f $_, $functionInput[$_]) -Verbose }
+
+                    Invoke-GeneralDeployment @functionInput -Verbose
+                  errorActionPreference: stop
+                  azurePowerShellVersion: LatestVersion
+                enabled: true
+
+  - deployment: Deploy_WVDHostPool
+    dependsOn: 
+    - Deploy_WVDProfilesStorageAccount01
+    environment: SBX
+    condition: and(succeeded(), true)
+    timeoutInMinutes: 120
+    pool:
+      vmImage: $(vmImage)
+    strategy:
+        runOnce:
+          deploy:
+            steps:
+              - checkout: self
+              - task: AzurePowerShell@4
+                displayName: 'Deploy module [WvdHostPools] in [$(resourceGroupName)] via [$(serviceConnection)]'
+                name: Deploy_WVDHostPool_Task
+                inputs:
+                  azureSubscription: $(serviceConnection)
+                  ScriptType: InlineScript
+                  inline: |
+                    Write-Verbose "Load function" -Verbose
+                    . '$(Build.Repository.LocalPath)/$(orchestrationFunctionsPath)/Invoke-GeneralDeployment.ps1'
+
+                    $parameterFilePath = '$(Pipeline.Workspace)/parameters/wvdhostpool.parameters.json'
+                    $functionInput = @{
+                      resourcegroupName             = "$(resourceGroupName)"
+                      location                      = "$(location)"
+                      moduleName                    = "WvdHostPools"
+                      moduleVersion                 = "0.0.1"
+                      parameterFilePath             = $parameterFilePath
+                    }
+
+                    Write-Verbose "Invoke task with" -Verbose
+                    $functionInput.Keys | ForEach-Object { Write-Verbose ("PARAMETER: `t'{0}' with value '{1}'" -f $_, $functionInput[$_]) -Verbose }
+
+                    Invoke-GeneralDeployment @functionInput -Verbose
+                  errorActionPreference: stop
+                  azurePowerShellVersion: LatestVersion
+                enabled: true  
+
+  - deployment: Deploy_DesktopAppGroup
+    dependsOn: 
+    - Deploy_WVDHostPool
+    - Deploy_WVDSessionHosts
+    environment: SBX
+    condition: and(succeeded(), true)
+    timeoutInMinutes: 120
+    pool:
+      vmImage: $(vmImage)
+    strategy:
+        runOnce:
+          deploy:
+            steps:
+              - checkout: self
+              - task: AzurePowerShell@4
+                displayName: 'Deploy module [WvdApplicationGroups] in [$(resourceGroupName)] via [$(serviceConnection)]'
+                name: Deploy_WvdApplicationGroups_Task
+                inputs:
+                  azureSubscription: $(serviceConnection)
+                  ScriptType: InlineScript
+                  inline: |
+                    Write-Verbose "Load function" -Verbose
+                    . '$(Build.Repository.LocalPath)/$(orchestrationFunctionsPath)/Invoke-GeneralDeployment.ps1'
+
+                    $parameterFilePath = '$(Pipeline.Workspace)/parameters/wvddesktoppapplicationgroup.parameters.json'
+                    $functionInput = @{
+                      resourcegroupName             = "$(resourceGroupName)"
+                      location                      = "$(location)"
+                      moduleName                    = "WvdApplicationGroups"
+                      moduleVersion                 = "2020-06-02"
+                      parameterFilePath             = $parameterFilePath
+                    }
+
+                    Write-Verbose "Invoke task with" -Verbose
+                    $functionInput.Keys | ForEach-Object { Write-Verbose ("PARAMETER: `t'{0}' with value '{1}'" -f $_, $functionInput[$_]) -Verbose }
+
+                    Invoke-GeneralDeployment @functionInput -Verbose
+                  errorActionPreference: stop
+                  azurePowerShellVersion: LatestVersion
+                enabled: true
+
+  - deployment: Deploy_WVDSessionHosts
+    dependsOn:
+    - Deploy_WVDHostPool
+    environment: SBX
+    condition: and(succeeded(), true)
+    timeoutInMinutes: 120
+    pool:
+      vmImage: $(vmImage)
+    strategy:
+        runOnce:
+          deploy:
+            steps:
+              - checkout: self
+              - powershell: |
+                  if(-not (Get-Module Az.DesktopVirtualization -ListAvailable)) {
+                      Write-Verbose "Installing module 'Az.DesktopVirtualization'" -Verbose
+                      Install-Module Az.DesktopVirtualization -Repository PSGallery -Force -Scope CurrentUser
+                  } else {
+                      Write-Verbose "Module 'Az.DesktopVirtualization' already installed" -Verbose
+                  }
+                displayName: 'Install required module'
+              - task: AzurePowerShell@4
+                displayName: 'Deploy module [VirtualMachines] in [$(resourceGroupName)] via [$(serviceConnection)]'
+                name: Deploy_SessionHosts_Task
+                inputs:
+                  azureSubscription: $(serviceConnection)
+                  ScriptType: InlineScript
+                  inline: |
+                    Write-Verbose "Load function" -Verbose
+                    . '$(Build.Repository.LocalPath)/$(orchestrationFunctionsPath)/Invoke-GeneralDeployment.ps1'
+                    . '$(Build.Repository.LocalPath)/$(orchestrationFunctionsPath)/Add-CustomParameters.ps1'
+
+                    $parameterFilePath = '$(Pipeline.Workspace)/parameters/wvdsessionhost.parameters.json'
+                    $functionInput = @{
+                      resourcegroupName             = "$(resourceGroupName)"
+                      location                      = "$(location)"
+                      moduleName                    = "VirtualMachines"
+                      moduleVersion                 = "2020-06-02"
+                      parameterFilePath             = $parameterFilePath
+                    }
+
+                    Write-Verbose "Invoke task with" -Verbose
+                    $functionInput.Keys | ForEach-Object { Write-Verbose ("PARAMETER: `t'{0}' with value '{1}'" -f $_, $functionInput[$_]) -Verbose }
+
+                    Write-Verbose "Fetch and populated pipeline outputs" -Verbose
+                    $regInfo = Get-AzWvdRegistrationInfo -HostPoolName '$(hostpoolname)' -ResourceGroupName '$(resourceGroupName)'
+
+                    $overwriteInputObject = @{
+                      parameterFilePath = $parameterFilePath
+                      valueMap         = @(
+                        @{ path = 'dscConfiguration.value.protectedSettings.configurationArguments.registrationInfoToken'; value = $regInfo.Token }
+                      )
+                    }
+                    Add-CustomParameters @overwriteInputObject
+
+                    $parameterObjects = $()
+                    if (-not [String]::IsNullOrEmpty('$(customImageReferenceId)')) {
+                      Write-Verbose "Using custom image ref ['$(customImageReferenceId)']" -Verbose
+                      $parameterObjects += @{
+                        imageReference = @{
+                          id = '$(customImageReferenceId)'
+                        }
+                      }
+                    }
+                    else {
+                      $imageReference = @{
+                        publisher = '$(publisher)'
+                        offer     = '$(offer)'
+                        sku       = '$(sku)'
+                        version   = '$(version)'
+                      }
+                      Write-Verbose ("Using published image ref [{0}]" -f ($imageReference | ConvertTo-Json)) -Verbose
+                      $parameterObjects += @{
+                        imageReference = $imageReference
+                      }
+                    }
+
+                    $storageAccount = Get-AzResource -Name $(profilesStorageAccountName) -ResourceType 'Microsoft.Storage/storageAccounts'
+                    $SASKey = (Get-AzStorageAccountKey -AccountName $storageAccount.Name -ResourceGroupName $storageAccount.ResourceGroupName)[0]                    
+                    $windowsScriptExtensionCommandToExecute = 'powershell -ExecutionPolicy Unrestricted -Command "& .\scriptExtensionMasterInstaller.ps1 -AzureAdminUpn $(azureAdminUpn) -AzureAdminPassword $(azureAdminPassword) -domainJoinPassword $(domainJoinPassword) -Dynparameters @{storageaccountkey=\"'+ $($SASKey.Value) +'\"}"'
+                    $windowsScriptExtensionCommandToExecute = ConvertTo-SecureString -String $windowsScriptExtensionCommandToExecute -AsPlainText -Force
+                    
+                    $parameterObjects += @{
+                      windowsScriptExtensionCommandToExecute = $windowsScriptExtensionCommandToExecute
+                    }
+
+                    $functionInput += @{
+                      optionalParameters = $parameterObjects
+                    }
+
+                    Invoke-GeneralDeployment @functionInput -Verbose
+                  errorActionPreference: stop
+                  azurePowerShellVersion: LatestVersion
+                enabled: true 
+
+  - deployment: Deploy_Workspace
+    dependsOn:
+    - Deploy_DesktopAppGroup
+    environment: SBX
+    condition: and(succeeded(), true)
+    timeoutInMinutes: 120
+    pool:
+      vmImage: $(vmImage)
+    strategy:
+        runOnce:
+          deploy:
+            steps:
+              - checkout: self
+              - task: AzurePowerShell@4
+                displayName: 'Deploy module [WvdWorkspaces] in [$(resourceGroupName)] via [$(serviceConnection)]'
+                name: Deploy_WvdWorkspaces_Task
+                inputs:
+                  azureSubscription: $(serviceConnection)
+                  ScriptType: InlineScript
+                  inline: |
+                    Write-Verbose "Load function" -Verbose
+                    . '$(Build.Repository.LocalPath)/$(orchestrationFunctionsPath)/Invoke-GeneralDeployment.ps1'
+
+                    $parameterFilePath = '$(Pipeline.Workspace)/parameters/wvdworkspace.parameters.json'
+                    $functionInput = @{
+                      resourcegroupName             = "$(resourceGroupName)"
+                      location                      = "$(location)"
+                      moduleName                    = "WvdWorkspaces"
+                      moduleVersion                 = "0.0.1"
+                      parameterFilePath             = $parameterFilePath
+                    }
+
+                    Write-Verbose "Invoke task with" -Verbose
+                    $functionInput.Keys | ForEach-Object { Write-Verbose ("PARAMETER: `t'{0}' with value '{1}'" -f $_, $functionInput[$_]) -Verbose }
+
+                    Invoke-GeneralDeployment @functionInput -Verbose
+                  errorActionPreference: stop
+                  azurePowerShellVersion: LatestVersion
+                enabled: true
+
+  - deployment: Deploy_RemoteAppGroup
+    dependsOn: 
+    - Deploy_WVDHostPool
+    - Deploy_WVDSessionHosts
+    environment: SBX
+    condition: and(succeeded(), eq(variables['enableApplicationJob'], true))
+    timeoutInMinutes: 120
+    pool:
+      vmImage: $(vmImage)
+    strategy:
+        runOnce:
+          deploy:
+            steps:
+              - checkout: self
+              - task: AzurePowerShell@4
+                displayName: 'Deploy module [WvdApplicationGroups] in [$(resourceGroupName)] via [$(serviceConnection)]'
+                name: Deploy_WvdApplicationGroups_Task
+                inputs:
+                  azureSubscription: $(serviceConnection)
+                  ScriptType: InlineScript
+                  inline: |
+                    Write-Verbose "Load function" -Verbose
+                    . '$(Build.Repository.LocalPath)/$(orchestrationFunctionsPath)/Invoke-GeneralDeployment.ps1'
+                
+                    $parameterFilePath = '$(Pipeline.Workspace)/parameters/wvdapplicationgroup01.parameters.json'
+                    $functionInput = @{
+                      resourcegroupName             = "$(resourceGroupName)"
+                      location                      = "$(location)"
+                      moduleName                    = "WvdApplicationGroups"
+                      moduleVersion                 = "2020-06-02"
+                      parameterFilePath             = $parameterFilePath
+                    }
+
+                    Write-Verbose "Invoke task with" -Verbose
+                    $functionInput.Keys | ForEach-Object { Write-Verbose ("PARAMETER: `t'{0}' with value '{1}'" -f $_, $functionInput[$_]) -Verbose }
+
+                    Invoke-GeneralDeployment @functionInput -Verbose
+                  errorActionPreference: stop
+                  azurePowerShellVersion: LatestVersion
+                enabled: true
+
+  - deployment: Deploy_Application
+    dependsOn:
+    - Deploy_WVDSessionHosts
+    - Deploy_RemoteAppGroup
+    environment: SBX
+    condition: and(succeeded(), eq(variables['enableApplicationJob'], true))
+    timeoutInMinutes: 120
+    pool:
+      vmImage: $(vmImage)
+    strategy:
+        runOnce:
+          deploy:
+            steps:
+              - checkout: self
+              - task: AzurePowerShell@4
+                displayName: 'Deploy module [WvdApplications] in [$(resourceGroupName)] via [$(serviceConnection)]'
+                name: Deploy_WvdApplications_Task
+                inputs:
+                  azureSubscription: $(serviceConnection)
+                  ScriptType: InlineScript
+                  inline: |
+                    Write-Verbose "Load function" -Verbose
+                    . '$(Build.Repository.LocalPath)/$(orchestrationFunctionsPath)/Invoke-GeneralDeployment.ps1'
+
+                    $parameterFilePath = '$(Pipeline.Workspace)/parameters/wvdapplication.parameters.json'
+                    $functionInput = @{
+                      resourcegroupName             = "$(resourceGroupName)"
+                      location                      = "$(location)"
+                      moduleName                    = "WvdApplications"
+                      moduleVersion                 = "2020-06-02"
+                      parameterFilePath             = $parameterFilePath
+                    }
+
+                    Write-Verbose "Invoke task with" -Verbose
+                    $functionInput.Keys | ForEach-Object { Write-Verbose ("PARAMETER: `t'{0}' with value '{1}'" -f $_, $functionInput[$_]) -Verbose }
+
+                    Invoke-GeneralDeployment @functionInput -Verbose
+                  errorActionPreference: stop
+                  azurePowerShellVersion: LatestVersion
+                enabled: true
+
+  - deployment: Update_Session_HostPool_with_new_image
+    dependsOn:
+      - Deploy_WVDSessionHosts
+      - Deploy_Application
+      - Deploy_Workspace
+    environment: SBX
+    condition: |
+      and (
+          not(canceled()),
+          eq(variables['enableJobUpdateSessionHosts'], true),
+          or(
+            eq(dependencies.Deploy_WVDSessionHosts.result, ''),
+            in(dependencies.Deploy_WVDSessionHosts.result, 'Succeeded', 'Skipped')
+          ),
+          or(
+            eq(dependencies.Deploy_Application.result, ''),
+            in(dependencies.Deploy_Application.result, 'Succeeded', 'Skipped')
+          ),
+          or(
+            eq(dependencies.Deploy_Workspace.result, ''),
+            in(dependencies.Deploy_Workspace.result, 'Succeeded', 'Skipped')
+          )
+      )
+    timeoutInMinutes: 120
+    pool:
+      vmImage: $(vmImage)
+    strategy:
+        runOnce:
+          deploy:
+            steps:
+              - checkout: self
+              - powershell: |
+                  if(-not (Get-Module Az.DesktopVirtualization -ListAvailable)) {
+                      Write-Verbose "Installing module 'Az.DesktopVirtualization'" -Verbose
+                      Install-Module Az.DesktopVirtualization -Repository PSGallery -Force -Scope CurrentUser
+                  } else {
+                      Write-Verbose "Module 'Az.DesktopVirtualization' already installed" -Verbose
+                  }
+                displayName: 'Install required module'
+              - task: AzurePowerShell@4
+                displayName: 'Run image lifecycle update via [$(serviceConnection)]'
+                name: ImageLifecycleUpdate
+                inputs:
+                  azureSubscription: $(serviceConnection)
+                  ScriptType: InlineScript
+                  inline: |
+                    Write-Verbose "Load function" -Verbose
+                    . '$(Build.Repository.LocalPath)/$(parameterFolderPath)/Scripts/Invoke-UpdateHostPool.ps1'
+
+                    $functionInput = @{
+                      HostPoolName       = '$(HostPoolName)'
+                      HostPoolRGName     = '$(resourceGroupName)'
+                      LogoffDeadline     = '$(LogoffDeadline)'
+                      LogOffMessageTitle = '$(LogOffMessageTitle)'
+                      LogOffMessageBody  = '$(LogOffMessageBody)'
+                      UTCOffset          = '$(TimeDifference)'
+                    }
+
+                    if (-not [String]::IsNullOrEmpty('$(customImageReferenceId)')) {
+                      $functionInput += @{ customImageReferenceId = '$(customImageReferenceId)' }
+                    }
+
+                    else {
+                      $functionInput += @{ MarketplaceImageVersion = '$(version)' }
+                    }
+
+                    Write-Verbose "Invoke task with" -Verbose
+                    $functionInput.Keys | ForEach-Object { Write-Verbose ("PARAMETER: `t'{0}' with value '{1}'" -f $_, $functionInput[$_]) -Verbose }
+
+                    Invoke-UpdateHostPool @functionInput -Verbose
+                  errorActionPreference: stop
+                  azurePowerShellVersion: LatestVersion
+                enabled: true

@@ -1,0 +1,139 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vmNamePrefix": {
+            "value": "[vmNamePrefix]"
+        },
+        "vmNumberOfInstances": {
+            "value": 2
+        },
+        "vmInitialNumber": {
+            "value": 1
+        },
+        "vmSize": {
+            "value": "[vmSize]"
+        },
+        "imageReference": {
+            "value": {
+                "id": "<overwrittenByPipeline>",
+                //"id": "/subscriptions/[subscriptionId]/resourceGroups/WVD-Imaging-TO-RG/providers/Microsoft.Compute/galleries/sigto/images/W10-19H2-O365/versions/0.24282.50570"
+                "publisher": "[publisher]",
+                "offer": "[offer]",
+                "sku": "[sku]",
+                "version": "[imageVersion]"
+             }
+        },
+        "osDisk": {
+            "value": {
+                "createOption": "fromImage",
+                "diskSizeGB": "[diskSizeGB]",
+                "managedDisk": {
+                    "storageAccountType": "[vmDiskType]"
+                }
+            }
+        },
+        "adminUsername": {
+            "value": "[adminUsername]"
+        },
+        "adminPassword": {
+            "reference": {
+                "keyVault": {
+                    "id": "/subscriptions/[subscriptionId]/resourceGroups/[resourceGroupName]/providers/Microsoft.KeyVault/vaults/[keyVaultName]"
+                },
+                "secretName": "[AdminPasswordSecret]"
+            }
+        },
+        "availabilitySetName": {
+            "value": ""
+        },
+        "subnetId": {
+            "value": "subscriptions/[subscriptionId]/resourceGroups/[vnetResourceGroupName]/providers/Microsoft.Network/virtualNetworks/[vnetName]/subnets/[subnetName]"
+        },
+        "domainName": {
+            "value": "[domainName]"
+        },
+        "domainJoinUser": {
+            "value": "[domainJoinUser]"
+        },
+        "domainJoinPassword": {
+            "reference": {
+                "keyVault": {
+                    "id": "/subscriptions/[subscriptionId]/resourceGroups/[resourceGroupName]/providers/Microsoft.KeyVault/vaults/[keyVaultName]"
+                },
+                "secretName": "[AdminPasswordSecret]"
+            }
+        },
+        "domainJoinOU": {
+            "value": ""
+        },
+        "dscConfiguration": {
+            "value": {
+                "settings": {
+                    "wmfVersion": "latest",
+                    "configuration": {
+                        "url": "https://github.com/samvdjagt/wvdquickstart/raw/master/Uploads/Configuration.zip",
+                        "script": "Configuration.ps1",
+                        "function": "AddSessionHost"
+                    },
+                    "configurationArguments": {
+                        "hostPoolName": "[hostpoolName]"
+                    }
+                },
+                "protectedSettings": {
+                    "configurationArguments": {
+                        "registrationInfoToken": "<PopulatedInPipeline>" 
+                    }
+                }
+            }
+        },
+        "enablePublicIP": {
+            "value": false
+        },
+        "diagnosticLogsRetentionInDays": {
+            "value": 365
+        },
+        "diagnosticStorageAccountId": {
+            "value": ""
+        },
+        "workspaceId": {
+            "value": ""
+        },
+        "eventHubAuthorizationRuleId": {
+            "value": ""
+        },
+        "eventHubName": {
+            "value": ""
+        },
+        "lockForDeletion": {
+            "value": false
+        },
+        "tags": {
+            "value": {}
+        },
+        "windowsScriptExtensionFileData": {
+            "value": [
+                {
+                    "uri": "https://[wvdAssetsStorage].blob.core.windows.net/wvdscripts/scriptExtensionMasterInstaller.ps1",
+                    "storageAccountId": "/subscriptions/[subscriptionId]/resourceGroups/[resourceGroupName]/providers/Microsoft.Storage/storageAccounts/[wvdAssetsStorage]"
+                },
+                {
+                    "uri": "https://[wvdAssetsStorage].blob.core.windows.net/wvdscripts/001-AzFiles.zip",
+                    "storageAccountId": "/subscriptions/[subscriptionId]/resourceGroups/[resourceGroupName]/providers/Microsoft.Storage/storageAccounts/[wvdAssetsStorage]"
+                },
+                {
+                    "uri": "https://[wvdAssetsStorage].blob.core.windows.net/wvdscripts/002-FSLogix.zip",
+                    "storageAccountId": "/subscriptions/[subscriptionId]/resourceGroups/[resourceGroupName]/providers/Microsoft.Storage/storageAccounts/[wvdAssetsStorage]"
+                },
+                {
+                    "uri": "https://[wvdAssetsStorage].blob.core.windows.net/wvdscripts/003-NotepadPP.zip",
+                    "storageAccountId": "/subscriptions/[subscriptionId]/resourceGroups/[resourceGroupName]/providers/Microsoft.Storage/storageAccounts/[wvdAssetsStorage]"
+                },
+                {
+                    "uri": "https://[wvdAssetsStorage].blob.core.windows.net/wvdscripts/004-Teams.zip",
+                    "storageAccountId": "/subscriptions/[subscriptionId]/resourceGroups/[resourceGroupName]/providers/Microsoft.Storage/storageAccounts/[wvdAssetsStorage]"
+                }
+            ]
+        }
+    }
+}

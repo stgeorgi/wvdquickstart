@@ -1,0 +1,143 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "storageAccountName": {
+      "value": "sbxstoracctest"
+    },
+    "storageAccountKind": {
+      "value": "StorageV2"
+    },
+    "storageAccountSku": {
+      "value": "Standard_LRS"
+    },
+    "storageAccountAccessTier": {
+      "value": "Hot"
+    },
+    // "azureFilesIdentityBasedAuthentication": {
+    //   "value": {
+    //     "directoryServiceOptions": "Azure AD DS"
+    //   }
+    // },
+    // "roleAssignments": {
+    //   "value": [
+    //     {
+    //       "roleDefinitionIdOrName": "Owner",
+    //       "principalIds": [
+    //         "a09e8c01-1797-4839-ab3b-8759c951f71b", // WVDKnights (group)
+    //         "cb9df0b6-cc86-4982-9266-a38f68e68200" // AlsehrTestUser0 (user)
+    //       ]
+    //     },
+    //     {
+    //       "roleDefinitionIdOrName": "Reader",
+    //       "principalIds": [
+    //         "cb9df0b6-cc86-4982-9266-a38f68e68200" // AlsehrTestUser0 (user)
+    //       ]
+    //     },
+    //     {
+    //       "roleDefinitionIdOrName": "/providers/Microsoft.Authorization/roleDefinitions/c2f4ef07-c644-48eb-af81-4b1b4947fb11",
+    //       "principalIds": [
+    //         "cb9df0b6-cc86-4982-9266-a38f68e68200" // AlsehrTestUser0 (user)
+    //       ]
+    //     }
+    //   ]
+    // },
+    "blobContainers": {
+      "value": [
+        {
+          "name": "wvdscripts",
+          "publicAccess": "Container", //Container, Blob, None
+          "roleAssignments": [
+            {
+              "roleDefinitionIdOrName": "Owner",
+              "principalIds": [
+                "a09e8c01-1797-4839-ab3b-8759c951f71b", // WVDKnights (group)
+                "cb9df0b6-cc86-4982-9266-a38f68e68200" // AlsehrTestUser0 (user)
+              ]
+            },
+            // {
+            //   "roleDefinitionIdOrName": "Reader",
+            //   "principalIds": [
+            //     "cb9df0b6-cc86-4982-9266-a38f68e68200" // AlsehrTestUser0 (user)
+            //   ]
+            // },
+            // {
+            //   "roleDefinitionIdOrName": "/providers/Microsoft.Authorization/roleDefinitions/c2f4ef07-c644-48eb-af81-4b1b4947fb11",
+            //   "principalIds": [
+            //     "cb9df0b6-cc86-4982-9266-a38f68e68200" // AlsehrTestUser0 (user)
+            //   ]
+            // }
+          ]
+        },
+        {
+          "name": "wvdsoftware",
+          "publicAccess": "Container", //Container, Blob, None
+          "roleAssignments": []
+        }
+      ]
+    },
+    "fileShares": {
+      "value": [
+        {
+          "name": "wvdprofiles",
+          "shareQuota": "5120",
+          "roleAssignments": [
+            {
+              "roleDefinitionIdOrName": "Storage File Data SMB Share Contributor",
+              "principalIds": [
+                "a09e8c01-1797-4839-ab3b-8759c951f71b", // WVDKnights (group)
+                "cb9df0b6-cc86-4982-9266-a38f68e68200" // AlsehrTestUser0 (user)
+              ]
+            },
+            {
+              "roleDefinitionIdOrName": "Owner",
+              "principalIds": [
+                "a09e8c01-1797-4839-ab3b-8759c951f71b", // WVDKnights (group)
+                "cb9df0b6-cc86-4982-9266-a38f68e68200" // AlsehrTestUser0 (user)
+              ]
+            },
+            // {
+            //   "roleDefinitionIdOrName": "Reader",
+            //   "principalIds": [
+            //     "cb9df0b6-cc86-4982-9266-a38f68e68200" // AlsehrTestUser0 (user)
+            //   ]
+            // },
+            // {
+            //   "roleDefinitionIdOrName": "/providers/Microsoft.Authorization/roleDefinitions/c2f4ef07-c644-48eb-af81-4b1b4947fb11",
+            //   "principalIds": [
+            //     "cb9df0b6-cc86-4982-9266-a38f68e68200" // AlsehrTestUser0 (user)
+            //   ]
+            // }
+          ]
+        },
+        {
+          "name": "wvdprofiles2",
+          "shareQuota": "5120",
+          "roleAssignments": [
+            // {
+            //   "roleDefinitionIdOrName": "Owner",
+            //   "principalIds": [
+            //     "a09e8c01-1797-4839-ab3b-8759c951f71b"
+            //     //, // WVDKnights (group)
+            //     //"cb9df0b6-cc86-4982-9266-a38f68e68200" // AlsehrTestUser0 (user)
+            //   ]
+            // }
+            //,
+            // {
+            //   "roleDefinitionIdOrName": "Reader",
+            //   "principalIds": [
+            //     "cb9df0b6-cc86-4982-9266-a38f68e68200" // AlsehrTestUser0 (user)
+            //   ]
+            // },
+            // {
+            //   "roleDefinitionIdOrName": "/providers/Microsoft.Authorization/roleDefinitions/c2f4ef07-c644-48eb-af81-4b1b4947fb11",
+            //   "principalIds": [
+            //     "cb9df0b6-cc86-4982-9266-a38f68e68200" // AlsehrTestUser0 (user)
+            //   ]
+            // }
+          ]
+        }
+      ]
+    }
+  }
+}

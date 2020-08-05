@@ -1,0 +1,41 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "automationAccountName": {
+            "value": "[automationAccountName]"
+        },
+        "diagnosticLogsRetentionInDays": {
+            "value": 365
+        },
+        "lockForDeletion": {
+            "value": false
+        },
+        "tags": {
+            "value": {}
+        },
+        "diagnosticStorageAccountId": {
+            "value": ""
+        },
+        "workspaceId": {
+            "value": ""
+        },
+        "eventHubAuthorizationRuleId": {
+            "value": ""
+        },
+        "eventHubName": {
+            "value": ""
+        },
+        "runbooks": {
+            "value": [
+                {
+                    "runbookName": "ScalingRunbook",
+                    "runbookType": "PowerShell",
+                    "runbookScriptUri": "https://[wvdAssetsStorage].blob.core.windows.net/wvdscaling/HostPoolScaling.ps1",
+                    "runbookScriptLocationSasToken": "",
+                    "version": "1.0.0.0"
+                }
+            ]
+        }
+    }
+}

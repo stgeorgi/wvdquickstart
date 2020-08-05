@@ -1,0 +1,65 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "recoveryVaultName": {
+        "value": "ProfilesBackupVaultTT"
+      },
+      "diagnosticLogsRetentionInDays": {
+        "value": 365
+      },
+      "lockForDeletion": {
+        "value": false
+      },
+      "backupPolicies": {
+        "value": [
+          {
+            "name": "filesharepolicy",
+            "type": "Microsoft.RecoveryServices/vaults/backupPolicies",
+            "properties": {
+              "backupManagementType": "AzureStorage",
+              "workloadType": "AzureFileShare",
+              "schedulePolicy": {
+                "schedulePolicyType": "SimpleSchedulePolicy",
+                "scheduleRunFrequency": "Daily",
+                "scheduleRunTimes": [
+                  "2019-11-07T04:30:00Z"
+                ],
+                "scheduleWeeklyFrequency": 0
+              },
+              "retentionPolicy": {
+                "retentionPolicyType": "LongTermRetentionPolicy",
+                "dailySchedule": {
+                  "retentionTimes": [
+                    "2019-11-07T04:30:00Z"
+                  ],
+                  "retentionDuration": {
+                    "count": 30,
+                    "durationType": "Days"
+                  }
+                }
+              },
+              "timeZone": "UTC",
+              "protectedItemsCount": 0
+            }
+          }
+        ]
+      },
+      "protectionContainers": {
+        "value": [
+          {
+            "name": "StorageContainer;Storage;WVDProfilesRG;wvdprofilesstorageacc02",
+            "friendlyName": "wvdprofilesstorageacc02",
+            "backupFabric": "Azure",
+            "sourceResourceId": "/subscriptions/[subscriptionId]/resourceGroups/WVDProfilesRG/providers/Microsoft.Storage/storageAccounts/wvdprofilesstorageacc02",
+            "backupManagementType": "AzureStorage",
+            "containerType": "StorageContainer"
+          }
+        ]
+      },
+      "tags": {
+        "value": {
+        }
+      }
+    }
+  }

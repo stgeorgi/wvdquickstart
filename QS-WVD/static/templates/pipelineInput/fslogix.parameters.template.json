@@ -1,0 +1,25 @@
+{
+    "fslogix": [
+        {
+            "installFSLogix": true,
+            "configureFSLogix": true,
+            "profileContainerKeys": [
+                {
+                    "Name": "Enabled",
+                    "Type": "DWORD",
+                    "Value": "1"
+                },
+                {
+                    "Name": "VHDLocations",
+                    "Type": "MultiString",
+                    "Value": "\\\\[profilesStorageAccountName].file.core.windows.net\\[profilesShareName]"
+                }
+            ],
+            "NTFSPermission": true,
+            "fileShareName": "[profilesShareName]",
+            "fileShareStorageAccountName": "[profilesStorageAccountName]",
+            "domain": "[domainName]",
+            "targetGroup": "[targetGroup]"
+        }
+    ]
+}

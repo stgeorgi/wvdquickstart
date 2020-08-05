@@ -1,0 +1,115 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "userMsiName": {
+            "type": "string",
+            "defaultValue": "[guid(resourceGroup().id)]",
+            "metadata": {
+                "description": "Optional. Name of the User Assigned Identity."
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+                "description": "Optional. Location for all resources."
+            }
+        },
+        "lockForDeletion": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Optional. Switch to lock Resource from deletion."
+            }
+        },
+        "tags": {
+            "type": "object",
+            "defaultValue": {
+            },
+            "metadata": {
+                "description": "Optional. Tags of the resource."
+            }
+        },
+        "cuaId": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Optional. Customer Usage Attribution id (GUID). This GUID must be previously registered"
+            }
+        }
+    },
+    "variables": {
+    },
+    "resources": [
+        {
+            "condition": "[not(empty(parameters('cuaId')))]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-02-01",
+            "name": "[concat('pid-', parameters('cuaId'))]",
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "resources": [
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+            "name": "[parameters('userMsiName')]",
+            "apiVersion": "2018-11-30",
+            "location": "[parameters('location')]",
+            "tags": "[parameters('tags')]",
+            "resources": [
+                {
+                    "type": "providers/locks",
+                    "apiVersion": "2016-09-01",
+                    "condition": "[parameters('lockForDeletion')]",
+                    "name": "Microsoft.Authorization/msiDoNotDelete",
+                    "dependsOn": [
+                        "[concat('Microsoft.ManagedIdentity/userAssignedIdentities/', parameters('userMsiName'))]"
+                    ],
+                    "comments": "Resource lock on the MSI",
+                    "properties": {
+                        "level": "CannotDelete"
+                    }
+                }
+            ]
+        }
+    ],
+    "functions": [
+    ],
+    "outputs": {
+        "msiName": {
+            "type": "string",
+            "value": "[parameters('userMsiName')]",
+            "metadata": {
+                "description": "The name of the User Assigned Identity."
+            }
+        },
+        "msiResourceId": {
+            "type": "string",
+            "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('userMsiName'))]",
+            "metadata": {
+                "description": "The Resource Id of the User Assigned Identity."
+            }
+        },
+        "msiPrincipalId": {
+            "value": "[reference(resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', parameters('userMsiName'))).principalId]",
+            "type": "string",
+            "metadata": {
+                "description": "The Principal Id of the User Assigned Identity."
+            }
+        },
+        "msiResourceGroup": {
+            "type": "string",
+            "value": "[resourceGroup().name]",
+            "metadata": {
+                "description": "The name of the Resource Group the User Assigned Identity was created in."
+            }
+        }
+    }
+}

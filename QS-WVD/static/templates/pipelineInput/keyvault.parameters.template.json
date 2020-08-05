@@ -1,0 +1,57 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "keyVaultName": {
+            "value": "[keyVaultName]"
+        },
+        "accessPolicies": {
+            "value": [
+                {
+                    "tenantId": "[tenantId]",
+                    "objectId": "[objectId]",
+                    "permissions": {
+                        "keys": [
+                            "All"
+                        ],
+                        "secrets": [
+                            "All"
+                        ],
+                        "certificates": [
+                            "All"
+                        ]
+                    }
+                }
+            ]
+        },
+        "secretsObject": {
+            "value": {
+                "secrets": []
+            }
+        },
+        "enableVaultForDeployment": {
+            "value": true
+        },
+        "enableVaultForDiskEncryption": {
+            "value": true
+        },
+        "enableVaultForTemplateDeployment": {
+            "value": true
+        },
+        "vaultSku": {
+            "value": "Standard"
+        },
+        "diagnosticLogsRetentionInDays": {
+            "value": 365
+        },
+        "lockForDeletion": {
+            "value": false
+        },
+        "tags": {
+            "value": {}
+        },
+        "enableSoftDelete": {
+            "value": false
+        }
+    }
+}

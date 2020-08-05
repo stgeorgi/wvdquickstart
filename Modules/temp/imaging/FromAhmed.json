@@ -1,0 +1,117 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"publisher": {
+			"type": "string",
+			"defaultValue": "MicrosoftWindowsDesktop"
+		},
+		"offer": {
+			"type": "string",
+			"defaultValue": "windows-10"
+		},
+		"sku": {
+			"type": "string",
+			"defaultValue": "19h2-evd"
+		},
+		"version": {
+			"type": "string",
+			"defaultValue": "18363.720.2003120536",
+			"metadata": {
+				"description": "Version of the image, can be found with powershell: Get-AzVMImage -Location westeurope -PublisherName MicrosoftWindowsDesktop -Offer windows-10 -Skus 19h1-evd"
+			}
+		},
+		"ScriptUri": {
+			"type": "string",
+			"defaultValue": "<Enter the url for the powershell script to customize the wvd image>",
+			"metadata": {
+				"description": "Location of powershell script to customize your image"
+			}
+		},
+		"SIGImageDefinitionId": {
+			"type": "string",
+			"metadata": {
+				"description": "Id of Shared Image Gallery to distribute image to, eg: /subscriptions/<subscriptionID>/resourceGroups/<SIG resourcegroup>/providers/Microsoft.Compute/galleries/<SIG name>/images/<image definition>"
+			}
+		},
+		"ManagedImageName": {
+			"type": "string",
+			"defaultValue": "glblpr01HP01-AIB-ImageV2",
+			"metadata": {
+				"description": "Name of the managed image, it will be created in the AIB resourcegroup"
+			}
+		},
+		"randomGUID": {
+			"type": "string",
+			"defaultValue": "",
+			"defaultValue": "[newGuid()]"
+		}
+	},
+	"variables": {
+		"imageTemplateName": "[concat('AIB',uniqueString('deployment().name',parameters('randomGUID')))]",
+		"ManagedImageId": "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Compute/images/',parameters('ManagedImageName'))]"
+	},
+	"resources": [
+		{
+			"name": "[variables('imageTemplateName')]",
+			"type": "Microsoft.VirtualMachineImages/imageTemplates",
+			"apiVersion": "2019-05-01-preview",
+			"location": "[resourcegroup().location]",
+			"dependsOn": [
+			],
+			"properties": {
+				"buildTimeoutInMinutes": 240,
+				"vmProfile": {
+					"vmSize": "Standard_D4s_v3",
+					"osDiskSizeGB": 127
+
+				},
+
+				"source": {
+					"type": "ManagedImage",
+					"imageId": "/subscriptions/SubscriptionID/resourceGroups/ResourceGroupName/providers/Microsoft.Compute/images/syspreppedImageName"
+				},
+				"customize": [
+					{
+						"type": "PowerShell",
+						"name": "InstallApps",
+						"scriptUri": "[parameters('ScriptUri')]"
+					},
+
+					{
+						"type": "WindowsRestart",
+						"restartTimeout": "30m"
+					}
+				],
+				"distribute": [
+					{
+						"type": "SharedImage",
+						"galleryImageId": "[parameters('SIGImageDefinitionId')]",
+						"runOutputName": "SIGimage",
+						"artifactTags": {
+						},
+						"replicationRegions": [
+							"westeurope",
+							"eastus"
+						]
+					},
+					{
+						"type": "ManagedImage",
+						"imageId": "[variables('ManagedImageId')]",
+						"location": "[resourceGroup().location]",
+						"runOutputName": "<subscription name->AIBimage",
+						"artifactTags": {
+						}
+					}
+
+				]
+			}
+		}
+	],
+	"outputs": {
+		"ImageTemplateName": {
+			"type": "string",
+			"value": "[variables('imageTemplateName')]"
+		}
+	}
+}
