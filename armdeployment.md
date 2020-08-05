@@ -5,7 +5,7 @@ filename: armdeployment
 ---
 
 ## <b>Breakdown of ARM Deployment to Setup Azure DevOps</b>
-To understand the first of the two major deployments in the WVD QuickStart (for an overview, please see <a href="concepts">Concepts</a> section), the ARM deployment that configures the Azure DevOps automation and deploys some supporting resources, let's dive into the <a href="https://github.com/samvdjagt/wvdquickstart/tree/master/deploy.json" target="_blank">ARM template</a> itself.
+To understand the first of the two major deployments in the WVD QuickStart (for an overview, please see <a href="concepts">Concepts</a> section), the ARM deployment that configures the Azure DevOps automation and deploys some supporting resources, let's dive into the <a href="https://github.com/stgeorgi/wvdquickstart/tree/master/deploy.json" target="_blank">ARM template</a> itself.
 
 ### <b>Parameters</b>
 In the parameters section of the ARM template, you'll find all the parameters that are exposed to the user input. ALl of these parameters come with a description to indicate what they're used for. These are typically pretty straightforward and will not be explained further in this documentation.
@@ -33,7 +33,7 @@ In the parameters section of the ARM template, you'll find all the parameters th
 The variables section holds certain values that are used throughout the deployment, that are not exposed to the user. As these are less obvious, their meaning and use will be explained in this section.
 ```
 "variables": {
-    "_artifactsLocation": "https://raw.githubusercontent.com/samvdjagt/wvdquickstart/master",
+    "_artifactsLocation": "https://raw.githubusercontent.com/stgeorgi/wvdquickstart/master",
 ```
 The *artifactslocation* variable holds the URL to the GitHub repository that is used throughout the deployment to fetch required files. If you are to customize the solution in your own GitHub repository, you should provide the link to it here to make sure the deployment fetches the files from your repo. This repo has to be public for the deployment to work.
 ```
@@ -199,7 +199,7 @@ The above part of the Automation Account deployment creates two Automation crede
                     }
                 }
             },
-The first runbook above runs the <a href="https://github.com/samvdjagt/wvdquickstart/tree/master/ARMRunbookScripts/configureMSI.ps1" target="_blank">configureMSI.ps1</a> script. This is a script that configures the 'WVDServicePrincipal' managed identity in the deployment resource group to give it the *contributor* role on the subscription. This is needed to run deployment scripts in the ARM template successfully.
+The first runbook above runs the <a href="https://github.com/stgeorgi/wvdquickstart/tree/master/ARMRunbookScripts/configureMSI.ps1" target="_blank">configureMSI.ps1</a> script. This is a script that configures the 'WVDServicePrincipal' managed identity in the deployment resource group to give it the *contributor* role on the subscription. This is needed to run deployment scripts in the ARM template successfully.
 ```
             {
                 "type": "runbooks",
@@ -243,7 +243,7 @@ The first runbook above runs the <a href="https://github.com/samvdjagt/wvdquicks
                 }
             },
 ```
-The second runbook runs the <a href="https://github.com/samvdjagt/wvdquickstart/tree/master/ARMRunbookScripts/createServicePrincipal.ps1" target="_blank">createServicePrincipal.ps1</a> script. This script creates the AAD application service principal used to create a service connection between the Azure subscription and the DevOps project. If the application already exists, this script will update the existing one with the right permissions.
+The second runbook runs the <a href="https://github.com/stgeorgi/wvdquickstart/tree/master/ARMRunbookScripts/createServicePrincipal.ps1" target="_blank">createServicePrincipal.ps1</a> script. This script creates the AAD application service principal used to create a service connection between the Azure subscription and the DevOps project. If the application already exists, this script will update the existing one with the right permissions.
 ```
             {
                 "type": "runbooks",
@@ -290,7 +290,7 @@ The second runbook runs the <a href="https://github.com/samvdjagt/wvdquickstart/
         ]
     },
 ```
-The third and last runbook runs the <a href="https://github.com/samvdjagt/wvdquickstart/tree/master/ARMRunbookScripts/devopssetup.ps1" target="_blank">devopssetup.ps1</a> script. This script makes a number of REST API calls to create a DevOps project, a service connection between the Azure Subscription and the DevOps project, to initialize the DevOps repository with all the required files, to set some permissions in DevOps, and to generate the main automation parameter files: appliedParmeters.psd1 and variables.yml. These two parameter files will be used by the DevOps pipeline to deploy the WVD resources.
+The third and last runbook runs the <a href="https://github.com/stgeorgi/wvdquickstart/tree/master/ARMRunbookScripts/devopssetup.ps1" target="_blank">devopssetup.ps1</a> script. This script makes a number of REST API calls to create a DevOps project, a service connection between the Azure Subscription and the DevOps project, to initialize the DevOps repository with all the required files, to set some permissions in DevOps, and to generate the main automation parameter files: appliedParmeters.psd1 and variables.yml. These two parameter files will be used by the DevOps pipeline to deploy the WVD resources.
 ```
     {
         "type": "Microsoft.Automation/automationAccounts/variables",
@@ -405,7 +405,7 @@ The above section creates the DevOps organization that will host the WVD deploym
         }
     },
 ```
-The above deployment script *createDevopspipeline* executes the <a href="https://github.com/samvdjagt/wvdquickstart/tree/master/ARMRunbookScripts/createDevopsPipeline.sh" target="_blank">createDevopsPipeline.sh</a> script. This Azure CLI script creates and starts a DevOps pipeline in the newly created DevOps project.
+The above deployment script *createDevopspipeline* executes the <a href="https://github.com/stgeorgi/wvdquickstart/tree/master/ARMRunbookScripts/createDevopsPipeline.sh" target="_blank">createDevopsPipeline.sh</a> script. This Azure CLI script creates and starts a DevOps pipeline in the newly created DevOps project.
 ```
     {
         "type": "Microsoft.Resources/deploymentScripts",
@@ -434,7 +434,7 @@ The above deployment script *createDevopspipeline* executes the <a href="https:/
         }
     },
 ```
-The above deployment script *checkAzureCredentials* executes the <a href="https://github.com/samvdjagt/wvdquickstart/tree/master/ARMRunbookScripts/checkAzureCredentials.ps1" target="_blank">checkAzureCredentials.ps1</a> script. This script makes sure that the entered Azure Admin credentials are correct. 
+The above deployment script *checkAzureCredentials* executes the <a href="https://github.com/stgeorgi/wvdquickstart/tree/master/ARMRunbookScripts/checkAzureCredentials.ps1" target="_blank">checkAzureCredentials.ps1</a> script. This script makes sure that the entered Azure Admin credentials are correct. 
 ```
     {
         "type": "Microsoft.Resources/deployments",
@@ -478,4 +478,4 @@ The above deployment script *checkAzureCredentials* executes the <a href="https:
             ]
         }
 ```
-The above deployment script is ran only in the case of a Native AD deployment (versus Azure AD DS), and it runs a custom script extension on the domain controller VM to create a new user to be assigned to the WVD environment. This custom script extension will execute the <a href="https://github.com/samvdjagt/wvdquickstart/tree/master/Modules/ARM/UserCreation/scripts/createUsers.ps1" target="_blank">createUsers.ps1</a> script to, by default, create an AD user group, an AD user, assign that user to the group, and start a sync cycle to synchronize these changes with Azure.
+The above deployment script is ran only in the case of a Native AD deployment (versus Azure AD DS), and it runs a custom script extension on the domain controller VM to create a new user to be assigned to the WVD environment. This custom script extension will execute the <a href="https://github.com/stgeorgi/wvdquickstart/tree/master/Modules/ARM/UserCreation/scripts/createUsers.ps1" target="_blank">createUsers.ps1</a> script to, by default, create an AD user group, an AD user, assign that user to the group, and start a sync cycle to synchronize these changes with Azure.
