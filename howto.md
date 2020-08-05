@@ -29,7 +29,7 @@ Additionally, the QuickStart will set up <a href="https://dev.azure.com" target=
 ### <b>Get started: ARM Deployment - Azure DevOps Setup</b>
 Once you've satisfied all the prerequisites, you are ready to deploy using the QuickStart! As explained in the <a href="concepts">Concepts</a> section, the deployment consists of two main components: an Azure Resource Manager (ARM) deployment and an Azure DevOps (ADO) pipeline. The first of the two will deploy a number of resources supporting the deployment automation, including the creation of a DevOps project and automation pipeline. By clicking the "Deploy to Azure" button, you will be taken to the Azure Portal for a custom deployment. There, you can fill out the required user input and click *purchase*. 
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https:%2F%2Fraw.githubusercontent.com%2Fsamvdjagt%2Fwvdquickstart%2Fmaster%2Fdeploy.json" target="_blank">
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https:%2F%2Fraw.githubusercontent.com%2Fstgeorgi%2Fwvdquickstart%2Fmaster%2Fdeploy.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>
 </a><br>
 
