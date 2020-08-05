@@ -37,6 +37,7 @@ The azuremodules.zip in this folder contains the following PowerShell modules:
 * Az.Automation
 * Az.Keyvault
 * Az.ManagedServiceIdentity
+* Az.Network
 * Az.Resources
 * Az.Websites
 * AzureAD
