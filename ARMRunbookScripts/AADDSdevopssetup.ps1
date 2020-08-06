@@ -1,4 +1,4 @@
-﻿#Initializing variables from automation account
+#Initializing variables from automation account
 $SubscriptionId = Get-AutomationVariable -Name 'subscriptionid'
 $ResourceGroupName = Get-AutomationVariable -Name 'ResourceGroupName'
 $fileURI = Get-AutomationVariable -Name 'fileURI'
@@ -12,7 +12,6 @@ $keyvaultName = Get-AutomationVariable -Name 'keyvaultName'
 $wvdAssetsStorage = Get-AutomationVariable -Name 'assetsName'
 $profilesStorageAccountName = Get-AutomationVariable -Name 'profilesName'
 $ObjectId = Get-AutomationVariable -Name 'ObjectId'
-$DomainJoinAccountUPN = Get-AutomationVariable -Name 'DomainJoinAccountUPN'
 $existingVnetName = Get-AutomationVariable -Name 'existingVnetName'
 $existingSubnetName = Get-AutomationVariable -Name 'existingSubnetName'
 $virtualNetworkResourceGroupName = Get-AutomationVariable -Name 'ResourceGroupName'
@@ -56,14 +55,6 @@ $CredentialAssetName = 'ServicePrincipalCred'
 $SPCredentials = Get-AutomationPSCredential -Name $CredentialAssetName
 
 #The name of the Automation Credential Asset this runbook will use to authenticate to Azure.
-$domainCredentialsAsset = 'domainJoinCredentials'
-
-#Authenticate Azure
-#Get the credential with the above name from the Automation Asset store
-$domainCredentials = Get-AutomationPSCredential -Name $domainCredentialsAsset
-$domainCredentials.password.MakeReadOnly()
-
-#The name of the Automation Credential Asset this runbook will use to authenticate to Azure.
 $AzCredentialsAsset = 'AzureCredentials'
 $AzCredentials = Get-AutomationPSCredential -Name $AzCredentialsAsset
 $AzCredentials.password.MakeReadOnly()
@@ -80,18 +71,16 @@ $vnet.DhcpOptions.DnsServers = "10.0.0.4"
 Set-AzVirtualNetwork -VirtualNetwork $vnet
 
 # Create admin user for domain join
-$split = $domainCredentials.username.Split("@")
-$domainUsername = $split[0]
-
 $PasswordProfile = New-Object -TypeName Microsoft.Open.AzureAD.Model.PasswordProfile
-$BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($domainCredentials.password)
+$BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($AzCredentials.password)
 $UnsecurePassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
 $PasswordProfile.Password = $UnsecurePassword
 $PasswordProfile.ForceChangePasswordNextLogin = $False
+$domainJoinUPN = $adminUsername + '@' + $domainName
 
-New-AzureADUser -DisplayName $domainUsername -PasswordProfile $PasswordProfile -UserPrincipalName $domainCredentials.username -AccountEnabled $true -MailNickName $domainUsername
+New-AzureADUser -DisplayName $adminUsername -PasswordProfile $PasswordProfile -UserPrincipalName $domainJoinUPN -AccountEnabled $true -MailNickName $adminUsername
 
-$domainUser = Get-AzureADUser -Filter "UserPrincipalName eq '$($domainCredentials.username)'" | Select-Object ObjectId
+$domainUser = Get-AzureADUser -Filter "UserPrincipalName eq '$($domainJoinUPN)'" | Select-Object ObjectId
 # Fetch user to assign to role
 $roleMember = Get-AzureADUser -ObjectId $domainUser.ObjectId
 
@@ -109,9 +98,6 @@ if ($role -eq $null) {
 Add-AzureADDirectoryRoleMember -ObjectId $role.ObjectId -RefObjectId $roleMember.ObjectId
 # Fetch role membership for role to confirm
 Get-AzureADDirectoryRoleMember -ObjectId $role.ObjectId | Get-AzureADUser
-
-New-AzureADUserAppRoleAssignment -ObjectId $domainUser.ObjectId -PrincipalId $domainUser.ObjectId -ResourceId '603b25af-b6ce-4e7c-9b9b-adb670f16acc' -Id '7af32be4-ebe7-4d61-8282-c09945b47490'
-New-AzureADUserAppRoleAssignment -ObjectId $domainUser.ObjectId -PrincipalId $domainUser.ObjectId -ResourceId '2af31936-bd69-4703-b8ea-67788bb07f47' -Id '299dad25-58e3-473d-9733-171fb3034713'
 
 # First, retrieve the object ID of the newly created 'AAD DC Administrators' group.
 $GroupObjectId = Get-AzureADGroup -Filter "DisplayName eq 'AAD DC Administrators'" | Select-Object ObjectId
@@ -235,10 +221,6 @@ write-output $body
 $response = Invoke-RestMethod -Uri $url -Headers @{Authorization = "Basic $token"} -Method Post -Body $Body -ContentType application/json
 write-output $response
 
-$split = $DomainJoinAccountUPN.Split("@")
-$domainUsername = $split[0]
-$domainName = $split[1]
-
 # In case Azure AD DS is used, create a new user here, and assign it to the targetGroup. The principalID of this group will then be used.
 if ($identityApproach -eq 'Azure AD DS') {
   $url = $($fileURI + "/Modules/ARM/UserCreation/Parameters/users.parameters.json")
@@ -327,9 +309,9 @@ $parameters = (New-Object System.Net.WebClient).DownloadString($downloadUrl)
 $parameters = $parameters.Replace("[existingSubnetName]", $existingSubnetName)
 $parameters = $parameters.Replace("[virtualNetworkResourceGroupName]", $virtualNetworkResourceGroupName)
 $parameters = $parameters.Replace("[existingVnetName]", $existingVnetName)
-$parameters = $parameters.Replace("[existingDomainUsername]", $domainUsername)
+$parameters = $parameters.Replace("[existingDomainUsername]", $adminUsername)
 $parameters = $parameters.Replace("[existingDomainName]", $domainName)
-$parameters = $parameters.Replace("[DomainJoinAccountUPN]", $DomainJoinAccountUPN)
+$parameters = $parameters.Replace("[DomainJoinAccountUPN]", $domainJoinUPN)
 $parameters = $parameters.Replace("[objectId]", $ObjectId)
 $parameters = $parameters.Replace("[tenantId]", $tenant)
 $parameters = $parameters.Replace("[subscriptionId]", $subscriptionId)
@@ -423,7 +405,7 @@ $SecurePassword = $AzCredentials.password
 $BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($SecurePassword)
 $UnsecurePassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
 
-$DomainSecurePassword = $domainCredentials.password
+$DomainSecurePassword = $AzCredentials.password
 
 $BSTR2 = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($DomainSecurePassword)
 $DomainUnsecurePassword = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR2)
