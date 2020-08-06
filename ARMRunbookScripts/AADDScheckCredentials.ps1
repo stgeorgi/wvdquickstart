@@ -1,7 +1,8 @@
-﻿#Initializing variables from automation account
+#Initializing variables from automation account
 $SubscriptionId = Get-AutomationVariable -Name 'subscriptionid'
 $ResourceGroupName = Get-AutomationVariable -Name 'ResourceGroupName'
 $fileURI = Get-AutomationVariable -Name 'fileURI'
+$domainName = Get-AutomationVariable -Name 'domainName'
 
 # Download files required for this script from github ARMRunbookScripts/static folder
 $FileNames = "msft-wvd-saas-api.zip,msft-wvd-saas-web.zip,AzureModules.zip"
@@ -110,14 +111,8 @@ foreach($resourceProvider in $wvdResourceProviderName) {
 }
 #endregion
 
-$domainJoinCredAsset = 'domainJoinCredentials'
-$domainJoinCredentials = Get-AutomationPSCredential -Name $domainJoinCredAsset
-$domainJoinCredentials.password.MakeReadOnly()
-
 $PasswordProfile = New-Object -TypeName Microsoft.Open.AzureAD.Model.PasswordProfile
 
-$split = $domainJoinCredentials.username.Split("@")
-$domainName = $split[1]
 $username = "tempUser@" + $domainName
 
 $BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($AzCredentials.password)
@@ -145,9 +140,6 @@ if ($role -eq $null) {
 Add-AzureADDirectoryRoleMember -ObjectId $role.ObjectId -RefObjectId $roleMember.ObjectId
 # Fetch role membership for role to confirm
 Get-AzureADDirectoryRoleMember -ObjectId $role.ObjectId | Get-AzureADUser
-
-New-AzureADUserAppRoleAssignment -ObjectId $domainUser.ObjectId -PrincipalId $domainUser.ObjectId -ResourceId '603b25af-b6ce-4e7c-9b9b-adb670f16acc' -Id '7af32be4-ebe7-4d61-8282-c09945b47490'
-New-AzureADUserAppRoleAssignment -ObjectId $domainUser.ObjectId -PrincipalId $domainUser.ObjectId -ResourceId '2af31936-bd69-4703-b8ea-67788bb07f47' -Id '299dad25-58e3-473d-9733-171fb3034713'
 
 New-AzADServicePrincipal -ApplicationId "2565bd9d-da50-47d4-8b85-4c97f669dc36"
 
