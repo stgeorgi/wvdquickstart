@@ -5,42 +5,7 @@
         "domainName": {
             "type": "string",
             "metadata": {
-            "description": "Domain Name"
-            }
-        },
-        "location": {
-            "type": "string",
-            "defaultValue": "[resourceGroup().location]",
-            "metadata": {
-            "description": "Location for all resources."
-            }
-        },
-        "domainServicesVnetName": {
-            "type": "string",
-            "defaultValue": "domain-services-vnet",
-            "metadata": {
-            "description": "Virtual Network Name"
-            }
-        },
-        "domainServicesVnetAddressPrefix": {
-            "type": "string",
-            "defaultValue": "10.0.0.0/16",
-            "metadata": {
-            "description": "Address Prefix"
-            }
-        },
-        "domainServicesSubnetName": {
-            "type": "string",
-            "defaultValue": "domain-services-subnet",
-            "metadata": {
-            "description": "Virtual Network Name"
-            }
-        },
-        "domainServicesSubnetAddressPrefix": {
-            "type": "string",
-            "defaultValue": "10.0.0.0/24",
-            "metadata": {
-            "description": "Subnet prefix"
+            "description": "Fully Qualified Domain Name, such as 'wvddomain.onmicrosoft.com'"
             }
         },
         "azureAdminUpn": {
@@ -55,24 +20,12 @@
                 "description": "The password that corresponds to the Azure admin UPN above."
             }
         },
-        "DomainJoinAccountUPN": {
-            "type": "string",
-            "metadata": {
-                "description": "User or service account UPN (<username>@<domain-to-join>.com) with sufficient privileges to domain join virtual machines. Additionally, please make sure the username is allowed (aka.ms/usernames) - Certain common usernames such as 'admin' are not allowed for this account. The template will fail if you enter a user account that requires MFA or an application that is secured by a certificate."
-            }
-        },
-        "DomainJoinAccountPassword": {
-            "type": "securestring",
-            "metadata": {
-                "description": "The password that corresponds to the domain join account UPN."
-            }
-        },
         "optionalNotificationEmail": {
             "type": "string",
             "metadata": {
                 "description": "If desired, you can provide an email address to which we'll send a notification once your WVD deployment completes. DevOps will, by default, attempt to send an email to your Azure account, regardless of whether you provide a value here."
             },
-            "defaultValue": "[parameters('azureAdminUpn')]"
+            "defaultValue": ""
         },
         "utcValue": {
             "type": "string",
@@ -83,16 +36,20 @@
         }
     },
     "variables": {
-         "_artifactsLocation": "https://raw.githubusercontent.com/stgeorgi/wvdquickstart/master",
+         "_artifactsLocation": "https://raw.githubusercontent.com/samvdjagt/wvdquickstart/master",
         "AdminPasswordSecret": "adminPassword",
-        "existingDomainUsername": "[first(split(parameters('DomainJoinAccountUPN'), '@'))]",
-        "existingDomainName": "[split(parameters('DomainJoinAccountUPN'), '@')[1]]",
+        "domainUsername": "domainJoiner",
+        "vnetName": "aaddsVnet",
+        "subnetName": "aaddsSubnet",
+        "vnetAddressPrefix": "10.0.0.0/16",
+        "subnetAddressPrefix": "10.0.0.0/24",
+        "domainName": "[parameters('domainName')]",
         "identityName": "WVDServicePrincipal",
         "location": "[resourcegroup().location]",
         "rgName": "[resourcegroup().name]",
         "keyvaultName": "[concat('keyvault', parameters('utcValue'))]",
         "assetsName": "[concat('assets', toLower(skip(parameters('utcValue'), 4)))]",
-        "profilesName": "[concat('profils', toLower(skip(parameters('utcValue'), 4)))]",
+        "profilesName": "[concat('profiles', toLower(skip(parameters('utcValue'), 4)))]",
         "autoAccountName": "[concat('automate', toLower(skip(parameters('utcValue'), 4)))]",
         "tenantId": "[subscription().tenantId]",
         "jobGuid0": "[guid(toLower(uniquestring(variables('identityName'), resourceGroup().id, parameters('utcValue'),'credentials')))]",
@@ -136,11 +93,11 @@
             },
             {
                 "name": "adminUsername",
-                "value": "[concat('\"',variables('existingDomainUsername'),'\"')]"
+                "value": "[concat('\"',variables('domainUsername'),'\"')]"
             },
                         {
                 "name": "domainName",
-                "value": "[concat('\"',variables('existingDomainName'),'\"')]"
+                "value": "[concat('\"',variables('domainName'),'\"')]"
             },
             {
                 "name": "keyvaultName",
@@ -155,16 +112,12 @@
                 "value": "[concat('\"',variables('profilesName'),'\"')]"
             },
             {
-                "name": "DomainJoinAccountUPN",
-                "value": "[concat('\"',parameters('DomainJoinAccountUPN'),'\"')]"
-            },
-            {
                 "name": "existingVnetName",
-                "value": "[concat('\"',parameters('domainServicesVnetName'),'\"')]"
+                "value": "[concat('\"',variables('vnetName'),'\"')]"
             },
             {
                 "name": "existingSubnetName",
-                "value": "[concat('\"',parameters('domainServicesSubnetName'),'\"')]"
+                "value": "[concat('\"',variables('subnetName'),'\"')]"
             },
             {
                 "name": "targetGroup",
@@ -179,10 +132,10 @@
                 "value": "[concat('\"',parameters('optionalNotificationEmail'),'\"')]"
             }
         ],   
-        "domainServicesNSGName": "[concat(parameters('domainServicesSubnetName'), '-nsg')]",
+        "domainServicesNSGName": "[concat(variables('subnetName'), '-nsg')]",
         "nsgRefId": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('domainServicesNSGName'))]",
-        "vnetRefId": "[resourceId('Microsoft.Network/virtualNetworks/', parameters('domainServicesVnetName'))]",
-        "subnetRefId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('domainServicesVnetName'), parameters('domainServicesSubnetName'))]",
+        "vnetRefId": "[resourceId('Microsoft.Network/virtualNetworks/', variables('vnetName'))]",
+        "subnetRefId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('subnetName'))]",
         "PSRemotingSlicePIPAddresses": [
             "52.180.179.108",
             "52.180.177.87",
@@ -267,28 +220,13 @@
                     }
                 },
                 {
-                    "type": "credentials",
-                    "apiVersion": "2015-01-01-preview",
-                    "name": "domainJoinCredentials",
-                    "location": "[resourceGroup().location]",
-                    "dependsOn": [
-                        "[concat('Microsoft.Automation/automationAccounts/', variables('autoAccountName'))]"
-                    ],
-                    "tags": {},
-                    "properties": {
-                        "userName": "[parameters('DomainJoinAccountUPN')]",
-                        "password": "[parameters('DomainJoinAccountPassword')]"
-                    }
-                },
-                {
                     "type": "runbooks",
                     "apiVersion": "2015-01-01-preview",
                     "name": "checkCredentialsRunbook",
                     "location": "[resourceGroup().location]",
                     "dependsOn": [
                         "[concat('Microsoft.Automation/automationAccounts/', variables('autoAccountName'))]",
-                        "[concat('Microsoft.Automation/automationAccounts/', variables('autoAccountName'), '/credentials/AzureCredentials')]",
-                        "[concat('Microsoft.Automation/automationAccounts/', variables('autoAccountName'), '/credentials/domainJoinCredentials')]"
+                        "[concat('Microsoft.Automation/automationAccounts/', variables('autoAccountName'), '/credentials/AzureCredentials')]"
                     ],
                     "tags": {},
                     "properties": {
@@ -326,8 +264,7 @@
                     "location": "[resourceGroup().location]",
                     "dependsOn": [
                         "[concat('Microsoft.Automation/automationAccounts/', variables('autoAccountName'))]",
-                        "[concat('Microsoft.Automation/automationAccounts/', variables('autoAccountName'), '/credentials/AzureCredentials')]",
-                        "[concat('Microsoft.Automation/automationAccounts/', variables('autoAccountName'), '/credentials/domainJoinCredentials')]"
+                        "[concat('Microsoft.Automation/automationAccounts/', variables('autoAccountName'), '/credentials/AzureCredentials')]"
                     ],
                     "tags": {},
                     "properties": {
@@ -471,7 +408,7 @@
             "name": "[concat(variables('keyvaultName'), '/', variables('AdminPasswordSecret'))]",
             "properties": {
                 "name": "[variables('AdminPasswordSecret')]",
-                "value": "[parameters('DomainJoinAccountPassword')]"
+                "value": "[parameters('azureAdminPassword')]"
             },
             "dependsOn": [
                 "[concat('Microsoft.KeyVault/vaults/', variables('keyvaultName'))]"
@@ -532,7 +469,7 @@
             "apiVersion": "2018-10-01",
             "type": "Microsoft.Network/networkSecurityGroups",
             "name": "[variables('domainServicesNSGName')]",
-            "location": "[parameters('location')]",
+            "location": "[variables('location')]",
             "properties": {
                 "securityRules": [
                     {
@@ -593,23 +530,23 @@
         {
             "apiVersion": "2018-10-01",
             "type": "Microsoft.Network/virtualNetworks",
-            "name": "[parameters('domainServicesVnetName')]",
-            "location": "[parameters('location')]",
+            "name": "[variables('vnetName')]",
+            "location": "[variables('location')]",
             "dependsOn": ["[variables('domainServicesNSGName')]"],
             "properties": {
             "addressSpace": {
-                "addressPrefixes": ["[parameters('domainServicesVnetAddressPrefix')]"]
+                "addressPrefixes": ["[variables('vnetAddressPrefix')]"]
             }
             },
             "resources": [
             {
                 "apiVersion": "2018-10-01",
                 "type": "subnets",
-                "location": "[parameters('location')]",
-                "name": "[parameters('domainServicesSubnetName')]",
-                "dependsOn": ["[parameters('domainServicesVnetName')]"],
+                "location": "[variables('location')]",
+                "name": "[variables('subnetName')]",
+                "dependsOn": ["[variables('vnetName')]"],
                 "properties": {
-                    "addressPrefix": "[parameters('domainServicesSubnetAddressPrefix')]",
+                    "addressPrefix": "[variables('subnetAddressPrefix')]",
                     "networkSecurityGroup": {
                         "id": "[variables('nsgRefId')]"
                     }
@@ -621,9 +558,9 @@
             "type": "Microsoft.AAD/DomainServices",
             "name": "[parameters('domainName')]",
             "apiVersion": "2017-06-01",
-            "location": "[parameters('location')]",
+            "location": "[variables('location')]",
             "dependsOn": [
-                "[parameters('domainServicesVnetName')]",
+                "[variables('vnetName')]",
                 "[concat('Microsoft.Automation/automationAccounts/', variables('autoAccountName'), '/jobs/', variables('jobGuid0'))]"
             ],
             "properties": {
