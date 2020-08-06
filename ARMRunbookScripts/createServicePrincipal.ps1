@@ -123,14 +123,6 @@ if ($RoleAssignment.RoleDefinitionName -eq "Owner" -or $RoleAssignment.RoleDefin
 	Add-AzureADApplicationOwner -ObjectId $azAdApplication.ObjectId -RefObjectId $ownerId
 	Write-Output "Azure admin successfully assigned owner role on the service principal" -Verbose
 
-	#Collecting WVD Serviceprincipal Api Permission and set to client app registration
-	$WVDServPrincipalApi = Get-AzADServicePrincipal -ApplicationId "5a0aa725-4958-4b0c-80a9-34562e23f3b7"
-	$WVDServicePrincipal = Get-AzureADServicePrincipal -ObjectId $WVDServPrincipalApi.Id
-	$AzureAdResouceAcessObject = New-Object -TypeName "Microsoft.Open.AzureAD.Model.RequiredResourceAccess"
-	$AzureAdResouceAcessObject.ResourceAppId = $WVDServicePrincipal.AppId
-	foreach ($permission in $WVDServicePrincipal.Oauth2Permissions) {
-		$AzureAdResouceAcessObject.ResourceAccess += New-Object -TypeName "Microsoft.Open.AzureAD.Model.ResourceAccess" -ArgumentList $permission.Id,"Scope"
-	}
 	#Collecting AzureService Management Api permission and set to client app registration
 	$AzureServMgmtApi = Get-AzADServicePrincipal -ApplicationId "797f4846-ba00-4fd7-ba43-dac1f8f63013"
 	$AzureAdServMgmtApi = Get-AzureADServicePrincipal -ObjectId $AzureServMgmtApi.Id
@@ -155,7 +147,7 @@ if ($RoleAssignment.RoleDefinitionName -eq "Owner" -or $RoleAssignment.RoleDefin
 	$AzureGraphApiAccessObject.ResourceAccess += New-Object -TypeName "Microsoft.Open.AzureAD.Model.ResourceAccess" -ArgumentList $permission4.Id,"Role"
 
 	# Add the WVD API,Log Analytics API and Microsoft Graph API permissions to the ADApplication
-	Set-AzureADApplication -ObjectId $azAdApplication.ObjectId -RequiredResourceAccess $AzureAdResouceAcessObject,$AzureServMgmtApiResouceAcessObject,$AzureGraphApiAccessObject -ErrorAction Stop
+	Set-AzureADApplication -ObjectId $azAdApplication.ObjectId -RequiredResourceAccess $AzureServMgmtApiResouceAcessObject,$AzureGraphApiAccessObject -ErrorAction Stop
     #Set-AzureADApplication -ObjectId $azAdApplication.ObjectId -Oauth2Permissions $AzureAdOauth2Object -Oauth2RequirePostResponse $false -Oauth2AllowImplicitFlow $true
 	
 	# Create credential for the service principal and store in the automation account
