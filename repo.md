@@ -12,7 +12,7 @@ On this page, you'll find an in-depth breakdown of all the files associated with
 
 The folder structure in the master branch is as follows:
 
-* <a href="https://github.com/stgeorgi/wvdquickstart/tree/master/AADDS" target="_blank">ARMRunbookScripts</a>: In this folder, there's the QuickStart ARM template that is used when you start with an empty subscription.
+* <a href="https://github.com/stgeorgi/wvdquickstart/tree/master/AADDS" target="_blank">AADDS</a>: In this folder, there's the QuickStart ARM template that is used when you start with an empty subscription.
 * <a href="https://github.com/stgeorgi/wvdquickstart/tree/master/ARMRunbookScripts" target="_blank">ARMRunbookScripts</a>: In this folder, a number of custom scripts are located that are run by the ARM deployment, either through an automation runbook or a deployment script.
   * <a href="https://github.com/stgeorgi/wvdquickstart/tree/master/ARMRunbookScripts/static" target="_blank">/static</a>: In this folder, some PowerShell modules required by the above scripts are located
 * <a href="https://github.com/stgeorgi/wvdquickstart/tree/master/Modules/ARM" target="_blank">Modules/ARM</a>: This folder contains modular ARM templates that are called by the DevOps automation to deploy Azure resources. For every resource, there's a dedicated deploy.json file, as well as a parameters file, pipeline file, and a testing script. These files are generic and should typically not be modified.
