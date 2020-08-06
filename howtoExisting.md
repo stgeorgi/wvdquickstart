@@ -6,7 +6,7 @@ filename: howto
 
 ## <b>How To Deploy With The WVD QuickStart</b>
 On this page, the process of using the WVD QuickStart with a pre-existing Native AD or Azure AD DS setup is laid out from start to finish. The QuickStart will configure Windows Virtual Desktop using your existing setup, of which the prerequisites are outlined below. The video below shows a walkthrough of the entire deployment process, including the manual setup of a Native AD environment, should you want to create one.
-<iframe width="784" height="441" src="https://www.youtube.com/embed/Tz3KgruovYc" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="100%" height="400" src="https://www.youtube.com/embed/Tz3KgruovYc" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ### <b>Prerequisites</b>
 In order to successfully deploy a WVD environment with the QuickStart, a couple of prerequisites need to be satisfied beforehand. All of these prerequisites are listed below, together with links to documentation that can help you with setting them up.
