@@ -5,9 +5,8 @@ filename: howto
 ---
 
 ## <b>How To Deploy With The WVD QuickStart</b>
-
+On this page, the process of using the WVD QuickStart with a pre-existing Native AD or Azure AD DS setup is laid out from start to finish. The QuickStart will configure Windows Virtual Desktop using your existing setup, of which the prerequisites are outlined below. The video below shows a walkthrough of the entire deployment process, including the manual setup of a Native AD environment, should you want to create one.
 <iframe width="784" height="441" src="https://www.youtube.com/embed/Tz3KgruovYc" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-The video above shows you a full end-to-end deployment with the WVD QuickStart, including the configuration of the prerequisites listed below.
 
 ### <b>Prerequisites</b>
 In order to successfully deploy a WVD environment with the QuickStart, a couple of prerequisites need to be satisfied beforehand. All of these prerequisites are listed below, together with links to documentation that can help you with setting them up.
@@ -29,7 +28,7 @@ Additionally, the QuickStart will set up <a href="https://dev.azure.com" target=
 ### <b>Get started: ARM Deployment - Azure DevOps Setup</b>
 Once you've satisfied all the prerequisites, you are ready to deploy using the QuickStart! As explained in the <a href="concepts">Concepts</a> section, the deployment consists of two main components: an Azure Resource Manager (ARM) deployment and an Azure DevOps (ADO) pipeline. The first of the two will deploy a number of resources supporting the deployment automation, including the creation of a DevOps project and automation pipeline. By clicking the "Deploy to Azure" button, you will be taken to the Azure Portal for a custom deployment. There, you can fill out the required user input and click *purchase*. 
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https:%2F%2Fraw.githubusercontent.com%2Fsamvdjagt%2Fwvdquickstart%2Fmaster%2Fdeploy.json" target="_blank">
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https:%2F%2Fraw.githubusercontent.com%2Fstgeorgi%2Fwvdquickstart%2Fmaster%2Fdeploy.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>
 </a><br>
 
