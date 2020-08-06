@@ -12,6 +12,7 @@ On this page, you'll find an in-depth breakdown of all the files associated with
 
 The folder structure in the master branch is as follows:
 
+* <a href="https://github.com/stgeorgi/wvdquickstart/tree/master/AADDS" target="_blank">ARMRunbookScripts</a>: In this folder, there's the QuickStart ARM template that is used when you start with an empty subscription.
 * <a href="https://github.com/stgeorgi/wvdquickstart/tree/master/ARMRunbookScripts" target="_blank">ARMRunbookScripts</a>: In this folder, a number of custom scripts are located that are run by the ARM deployment, either through an automation runbook or a deployment script.
   * <a href="https://github.com/stgeorgi/wvdquickstart/tree/master/ARMRunbookScripts/static" target="_blank">/static</a>: In this folder, some PowerShell modules required by the above scripts are located
 * <a href="https://github.com/stgeorgi/wvdquickstart/tree/master/Modules/ARM" target="_blank">Modules/ARM</a>: This folder contains modular ARM templates that are called by the DevOps automation to deploy Azure resources. For every resource, there's a dedicated deploy.json file, as well as a parameters file, pipeline file, and a testing script. These files are generic and should typically not be modified.
@@ -27,9 +28,11 @@ The folder structure in the master branch is as follows:
 
 ### <b>ARMRunbookScripts</b>
 * <a href="https://github.com/stgeorgi/wvdquickstart/tree/master/ARMRunbookScripts/checkCredentials.ps1" target="_blank">checkCredentials.ps1</a>: This script makes sure that the entered Azure Admin credentials are correct, in addition to validating the vnet, subnet, and firewall configuration. This script also configures the 'WVDServicePrincipal' managed identity in the deployment resource group to give it the *contributor* role on the subscription. This is needed to run deployment scripts in the main ARM template successfully.
+  * <a href="https://github.com/stgeorgi/wvdquickstart/tree/master/ARMRunbookScripts/AADDScheckCredentials.ps1" target="_blank">AADDScheckCredentials.ps1</a>: This script is an adapted version of the script above, and is only used when using the QuickStart starting with an empty subscription.
 * <a href="https://github.com/stgeorgi/wvdquickstart/tree/master/ARMRunbookScripts/createDevopsPipeline.sh" target="_blank">createDevopsPipeline.sh</a>: This Azure CLI script creates and starts a DevOps pipeline in the newly created DevOps project.
 * <a href="https://github.com/stgeorgi/wvdquickstart/tree/master/ARMRunbookScripts/createServicePrincipal.ps1" target="_blank">createServicePrincipal.ps1</a>: This script creates the AAD application service principal used to create a service connection between the Azure subscription and the DevOps project. If the application already exists, this script will update the existing one with the right permissions.
 * <a href="https://github.com/stgeorgi/wvdquickstart/tree/master/ARMRunbookScripts/devopssetup.ps1" target="_blank">devopssetup.ps1</a>: This script makes a number of REST API calls to create a DevOps project, a service connection between the Azure Subscription and the DevOps project, to initialize the DevOps repository with all the required files, to set some permissions in DevOps, and to generate the main automation parameter files: appliedParmeters.psd1 and variables.yml.
+  * <a href="https://github.com/stgeorgi/wvdquickstart/tree/master/ARMRunbookScripts/AADDSdevopssetup.ps1" target="_blank">AADDSdevopssetup.ps1</a>: This script is an adapted version of the script above, and is only used when using the QuickStart starting with an empty subscription.
 
 #### <a href="https://github.com/stgeorgi/wvdquickstart/tree/master/ARMRunbookScripts/static" target="_blank">ARMRunbookScripts/static</a>
 The azuremodules.zip in this folder contains the following PowerShell modules:
