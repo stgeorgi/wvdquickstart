@@ -67,7 +67,7 @@ While this folder only holds a Readme.MD file, it is used in the automation to s
 #### QS-WVD/scripts
 This folder contains certain Powershell scripts that are invoked by the DevOps pipeline:
 
-* <a href="https://github.com/stgeorgi/wvdquickstart/blob/master/QS-WVD/scripts/Invoke-StorageAccountPostDeployment.ps1" target="_blank">Invoke-StorageAccountPostDeployment.ps1</a>: This script is used in the deployment of the Assets storage account (see <a href="devops" target="_blank">DevOps</a> to upload the required files for the WVD Virtual Machine Custom Script Extensions.
+* <a href="https://github.com/stgeorgi/wvdquickstart/blob/master/QS-WVD/scripts/Invoke-StorageAccountPostDeployment.ps1" target="_blank">Invoke-StorageAccountPostDeployment.ps1</a>: This script is used in the deployment of the Assets storage account (see <a href="devops" target="_blank">DevOps</a>) to upload the required files for the WVD Virtual Machine Custom Script Extensions.
 * <a href="https://github.com/stgeorgi/wvdquickstart/blob/master/QS-WVD/scripts/New-PipelineParameterSetup.ps1" target="_blank">New-PipelineParameterSetup.ps1</a>: This script is called at the beginning of the DevOps pipeline (explained <a href="devops" target="_blank">here</a>) to generate the parameter files for the deployment of WVD resources.
 * <a href="https://github.com/stgeorgi/wvdquickstart/blob/master/QS-WVD/scripts/Update-WVDHostPool.ps1" target="_blank">Update-WVDHostPool.ps1</a> and <a href="https://github.com/stgeorgi/wvdquickstart/blob/master/QS-WVD/scripts/Update-WVDHostPoolV2.ps1" target="_blank">Update-WVDHostPoolV2.ps1</a> are currently not used in the automation, but they can be used to update existing host pools with a new image.
 
