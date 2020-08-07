@@ -57,6 +57,7 @@ if ($identityApproach -eq 'Azure AD DS') {
 	Disconnect-AzureAD
 	Write-Output "Domain join user is a member of AAD DC administrators and the entered credentials are correct."
 }
+#endregion
 
 #The name of the Automation Credential Asset this runbook will use to authenticate to Azure.
 $AzCredentialsAsset = 'AzureCredentials'
