@@ -43,4 +43,10 @@ Username: WVDTestUser001@{your-domain}.com <br>
 Password: Taken from DevOps organization in the following way: If organization is called <b>"WVDQuickStartOrg120011Z"</b>, your password will be "<b>Org120011Z!</b>" (case sensitive, and don't forget the exclamation point at the end) 
 (Disclaimer: You should change this password at your earliest convenience.)
 
-You should see a "WVD Workspace" appear, to which you can login to experience the best of Windows Virtual Desktop. Within this virtualized environment, your user will find Microsoft Office 365 amongst other built-in Microsoft applications. Additionally, since the QuickStart configures FSLogix profile management for you, a user profile will be created. This will be stored in the profiles storage account, in the *wvdprofiles* file share.
+You should see a "WVD Workspace" appear, to which you can login to experience the best of Windows Virtual Desktop. Within this virtualized environment, your user will find Microsoft Office 365 and Microsoft Teams amongst other built-in Microsoft applications. Additionally, since the QuickStart configures FSLogix profile management for you, a user profile will be created. This will be stored in the profiles storage account, in the *wvdprofiles* file share.
+
+### <b>Using the AADDS administrator account</b>
+In the automation, the QuickStart creates an administrator account (member of the AAD DC Administrators group) that can be used to manage the deployed domain. This is also the account used to domain join virtual machines, should you want to join additional VMs in the future. The credentials for this created account are the following, by default:
+
+Username: domainJoiner@{your-domain}.com
+Password: The same as your Azure admin account password (that you entered in the initial ARM deployment)
