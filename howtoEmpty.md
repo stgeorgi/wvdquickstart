@@ -48,5 +48,5 @@ You should see a "WVD Workspace" appear, to which you can login to experience th
 ### <b>Using the AADDS administrator account</b>
 In the automation, the QuickStart creates an administrator account (member of the AAD DC Administrators group) that can be used to manage the deployed domain. This is also the account used to domain join virtual machines, should you want to join additional VMs in the future. The credentials for this created account are the following, by default:
 
-Username: domainJoiner@{your-domain}.com
+Username: domainJoiner@{your-domain}.com <br>
 Password: The same as your Azure admin account password (that you entered in the initial ARM deployment)
