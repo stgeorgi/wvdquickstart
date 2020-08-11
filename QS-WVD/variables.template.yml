@@ -59,9 +59,6 @@ variables:
 - name: enableApplicationJob
   value: true  # To enable/disable remote apps job
 
-- name: enableImageUpdate
-  value: false    # To enable/disable Image Lifecycle job
-
 ## Hostpool
 #customImageReferenceId, as value, put: '/subscriptions/<subscriptionId>/resourceGroups/<image-resource-group-name>/providers/Microsoft.Compute/galleries/<SIG name>/images/<image name>/versions/<version>'
 - name: customImageReferenceId
@@ -84,22 +81,6 @@ variables:
   
 - name: profilesStorageAccountName
   value: "[profilesStorageAccountName]"
-
-## Image Lifecycle. These parameters are not used yet but can be used for custom imaging.
-- name: DeleteVM
-  value: false
-  
-- name: LogoffDeadline
-  value: 'LogoffDeadline'         
-  
-- name: LogOffMessageTitle
-  value: 'LogOffMessageTitle'
-  
-- name: LogOffMessageBody
-  value: 'LogOffMessageBody'              
-  
-- name: UtcOffset
-  value: 'UtcOffset'
 
 #endregion
 
