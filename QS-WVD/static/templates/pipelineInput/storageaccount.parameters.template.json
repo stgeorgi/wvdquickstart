@@ -23,16 +23,6 @@
           "name": "wvdscripts",
           "publicAccess": "Container",
           "roleAssignments": []
-        },
-        {
-          "name": "wvdsoftware",
-          "publicAccess": "Container",
-          "roleAssignments": []
-        },
-        {
-          "name": "wvdscaling",
-          "publicAccess": "Container",
-          "roleAssignments": []
         }
       ]
     }
