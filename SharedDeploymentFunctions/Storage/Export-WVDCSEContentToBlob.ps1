@@ -58,10 +58,6 @@ function Export-WVDCSEContentToBlob {
             @{
                 sourcePath = 'WVDCSEZipToUpload'
                 targetBlob = 'wvdscripts'
-            },
-            @{
-                sourcePath = 'WVDScaling'
-                targetBlob = 'wvdscaling'
             }
         )
     )
