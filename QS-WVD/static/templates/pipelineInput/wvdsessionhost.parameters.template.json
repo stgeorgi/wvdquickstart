@@ -17,7 +17,6 @@
         "imageReference": {
             "value": {
                 "id": "<overwrittenByPipeline>",
-                //"id": "/subscriptions/[subscriptionId]/resourceGroups/WVD-Imaging-TO-RG/providers/Microsoft.Compute/galleries/sigto/images/W10-19H2-O365/versions/0.24282.50570"
                 "publisher": "[publisher]",
                 "offer": "[offer]",
                 "sku": "[sku]",
