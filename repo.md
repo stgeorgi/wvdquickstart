@@ -12,10 +12,10 @@ On this page, you'll find an in-depth breakdown of all the files associated with
 
 The folder structure in the master branch is as follows:
 
-* <a href="https://github.com/stgeorgi/wvdquickstart/tree/master/AADDS" target="_blank">AADDS</a>: In this folder, there's the QuickStart ARM template that is used when you start with an empty subscription.
 * <a href="https://github.com/stgeorgi/wvdquickstart/tree/master/ARMRunbookScripts" target="_blank">ARMRunbookScripts</a>: In this folder, a number of custom scripts are located that are run by the ARM deployment, either through an automation runbook or a deployment script.
   * <a href="https://github.com/stgeorgi/wvdquickstart/tree/master/ARMRunbookScripts/static" target="_blank">/static</a>: In this folder, some PowerShell modules required by the above scripts are located
 * <a href="https://github.com/stgeorgi/wvdquickstart/tree/master/Modules/ARM" target="_blank">Modules/ARM</a>: This folder contains modular ARM templates that are called by the DevOps automation to deploy Azure resources. For every resource, there's a dedicated deploy.json file, as well as a parameters file, pipeline file, and a testing script. These files are generic and should typically not be modified.
+* <a href="https://github.com/stgeorgi/wvdquickstart/tree/master/NewSubAADDSSetup" target="_blank">NewSubAADDSSetup</a>: In this folder, there's the QuickStart ARM template that is used when you start with an empty subscription.
 * <a href="https://github.com/stgeorgi/wvdquickstart/tree/master/QS-WVD" target="_blank">QS-WVD</a>: This folder contains many of the files associated with the DevOps pipeline. This folder is also where you'll do most of your customization. The pipeline.yml file is the main DevOps automation pipeline, and the variables.yml file is where the pipeline gets all its parameters. 
   * <a href="https://github.com/stgeorgi/wvdquickstart/tree/master/QS-WVD/parameters" target="_blank">/parameters</a>: This folder is populated in the automation to store ARM deployment parameter files. 
   * <a href="https://github.com/stgeorgi/wvdquickstart/tree/master/QS-WVD/scripts" target="_blank">/scripts</a>: This folder contains scripts that are called by the DevOps pipeline.
@@ -69,7 +69,6 @@ This folder contains certain Powershell scripts that are invoked by the DevOps p
 
 * <a href="https://github.com/stgeorgi/wvdquickstart/blob/master/QS-WVD/scripts/Invoke-StorageAccountPostDeployment.ps1" target="_blank">Invoke-StorageAccountPostDeployment.ps1</a>: This script is used in the deployment of the Assets storage account (see <a href="devops" target="_blank">DevOps</a>) to upload the required files for the WVD Virtual Machine Custom Script Extensions.
 * <a href="https://github.com/stgeorgi/wvdquickstart/blob/master/QS-WVD/scripts/New-PipelineParameterSetup.ps1" target="_blank">New-PipelineParameterSetup.ps1</a>: This script is called at the beginning of the DevOps pipeline (explained <a href="devops" target="_blank">here</a>) to generate the parameter files for the deployment of WVD resources.
-* <a href="https://github.com/stgeorgi/wvdquickstart/blob/master/QS-WVD/scripts/Update-WVDHostPool.ps1" target="_blank">Update-WVDHostPool.ps1</a> and <a href="https://github.com/stgeorgi/wvdquickstart/blob/master/QS-WVD/scripts/Update-WVDHostPoolV2.ps1" target="_blank">Update-WVDHostPoolV2.ps1</a> are currently not used in the automation, but they can be used to update existing host pools with a new image.
 
 #### QS-WVD/static
 This folder contains the <a href="https://github.com/stgeorgi/wvdquickstart/blob/master/QS-WVD/static/appliedParameters.template.psd1" target="_blank">appliedParameters.template.psd1</a>, which is the template used by the initial ARM deployment to generate the *appliedParameters.psd1* file explained <a href="customize" target="_blank">here</a>.
@@ -80,9 +79,6 @@ This folder contains all the templates for ARM deployment parameter files. These
 ### <b>SharedDeploymentFunctions</b>
 * <a href="https://github.com/stgeorgi/wvdquickstart/blob/master/SharedDeploymentFunctions/Add-CustomParameters.ps1" target="_blank">Add-CustomParameters.ps1</a>: This script is called by the pipeline to add additional parameters to a resource deployment, in certain cases; For example, this function is used to add an extra parameter when using Azure AD DS as identity solution to correctly configure the storage account settings.
 * <b><a href="https://github.com/stgeorgi/wvdquickstart/blob/master/SharedDeploymentFunctions/Invoke-GeneralDeployment.ps1" target="_blank">Invoke-GeneralDeployment.ps1</a></b>: This all-important script is called for any resource deployment in the pipeline. This script finds the correct ARM template to deploy that resource, passes the correct parameters as arguments, and starts the ARM deployment.
-
-#### SharedDeploymentFunctions/Imaging
-The scripts in this folder can be used to allow for custom VM images in the solution. These are currently not used.
 
 #### SharedDeploymentFunctions/Storage
 This folder contains three scripts that are used in the deployment of the Assets storage account (where we store the Custom Script Extension (CSE) files):
