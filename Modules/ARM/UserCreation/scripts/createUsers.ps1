@@ -176,7 +176,7 @@ foreach ($config in $UserConfig.userconfig) {
             Remove-ADUser -Identity $userName -Confirm:$False
         }
         New-ADUser `
-        -SamAccountName $userNamSe `
+        -SamAccountName $userName `
         -UserPrincipalName $($userName + "@" + $domainName) `
         -Name "$userName" `
         -GivenName $userName `
