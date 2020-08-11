@@ -21,5 +21,7 @@ On this website, you will find all the information you need to get started with 
   * <a href="armdeployment">Conceptual deep-dive in the initial ARM deployment</a>
   * <a href="devops">Conceptual deep-dive in the DevOps automation</a>
 * <a href="howto">Getting started with the WVD QuickStart</a>
+  * <a href="howtoEmpty">Using the WVD QuickStart with a new or empty Azure subscription</a>
+  * <a href="howtoExisting">Using the WVD QuickStart with an existing AD or Azure AD DS setup</a>
 * <a href="customize">Customizing the WVD QuickStart</a>
 * <a href="troubleshoot">Troubleshooting your WVD QuickStart deployment</a>
