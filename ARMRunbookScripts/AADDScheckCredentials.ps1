@@ -1,3 +1,5 @@
+# This version of the checkCredentials script is only used when starting with a new or empty Azure subscription.
+
 #Initializing variables from automation account
 $SubscriptionId = Get-AutomationVariable -Name 'subscriptionid'
 $ResourceGroupName = Get-AutomationVariable -Name 'ResourceGroupName'
