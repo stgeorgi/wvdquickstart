@@ -24,7 +24,7 @@ As you can see in the above image, one of the options in the Pipelines menu on t
 Because Azure DevOps and the Azure Resource Manager are separate services, DevOps needs a way to authenticate with the Azure Resource Manager for it to get permission to deploy the WVD resources. To do so, the initial ARM deployment will create something called a *Service Connection*. You can find this service connection under your project settings -> Service Connections, and by default it will be called *WVDServiceConnection*.
 
 ### <b>Understanding the Automation Pipeline</b>
-Now that you are a little more familiar of the DevOps structure, we can dive straight into our <a href="https://github.com/stgeorgi/wvdquickstart/tree/master/QS-WVD/pipeline.yml" target="_blank">automation pipeline</a> itself. However, before doing so, it's recommended to familiarize yourself with the YAML pipeline file structure first, which you can do <a href="https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=azure-devops&tabs=schema%2Cparameter-schema" target="_blank">here</a>.
+Now that you are a little more familiar of the DevOps structure, we can dive straight into our <a href="https://github.com/stgeorgi/wvdquickstart/blob/master/QS-WVD/pipeline.yml" target="_blank">automation pipeline</a> itself. However, before doing so, it's recommended to familiarize yourself with the YAML pipeline file structure first, which you can do <a href="https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=azure-devops&tabs=schema%2Cparameter-schema" target="_blank">here</a>.
 
 #### Definition
 ```
@@ -566,4 +566,4 @@ This pipeline job is currently turned off, but it can be used to deploy a Remote
                   azurePowerShellVersion: LatestVersion
                 enabled: true
 ```
-This pipeline job is used to, by default, deploy two remote applications specified in the <a href="https://github.com/stgeorgi/wvdquickstart/tree/master/QS-WVD/static/templates/pipelineInput/wvdapplication.parameters.template.json" target="_blank">wvdapplication ARM template</a>: Microsoft Teams and Notepad++. These remote applications will appear in the workspace.
+This pipeline job is used to, by default, deploy two remote applications specified in the <a href="https://github.com/stgeorgi/wvdquickstart/blob/master/QS-WVD/static/templates/pipelineInput/wvdapplication.parameters.template.json" target="_blank">wvdapplication ARM template</a>: Microsoft Teams and Notepad++. These remote applications will appear in the workspace.
