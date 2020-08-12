@@ -14,7 +14,7 @@ To understand how the WVD QuickStart works, this page will walk you through a co
 ### <b>Conceptual Deployment Overview</b>
 As stated in the overview, the WVD QuickStart takes much of the WVD deployment complexity away, simplifying and automating the process, making the platform more accessible to non-expert users. As a WVD-centric end-to-end solution, the quickstart addressess reported pain points, challenges and feature gaps, empowering IT professionals to get started with WVD in a matter of clicks. This page will help you answer how exactly the QuickStart achieves that. The diagram below shows a high-level conceptual overview of the deployment with the WVD QuickStart:
 ![Deployment overview](images/overview.PNG?raw=true)
-In short, the QuickStart requires you to have some prerequisites - From which it will, in a fully automated way using Azure Devops, deploy a functional WVD environment with virtual machines running Windows 10 Enterprise Multi-Session, build 2004, with Office 365 and Microsoft Teams installed. Additionally, the virtual machines will be configured with <a href="https://docs.microsoft.com/en-us/fslogix/overview">FSLogix</a> for user profile management. Upon completion, a test user can login to the environment and experience the best of what WVD has to offer.
+In short, the QuickStart requires you to have some prerequisites - From which it will, in a fully automated way using Azure DevOps, deploy a functional WVD environment with virtual machines running Windows 10 Enterprise Multi-Session, build 2004, with Office 365 and Microsoft Teams installed. Additionally, the virtual machines will be configured with <a href="https://docs.microsoft.com/en-us/fslogix/overview">FSLogix</a> for user profile management. Upon completion, a test user can login to the environment and experience the best of what WVD has to offer.
 
 ### <b>Resources</b>
 In short, the deployment with the WVD QuickStart consists of two main parts:
@@ -22,7 +22,7 @@ In short, the deployment with the WVD QuickStart consists of two main parts:
 * An Azure Resource Manager (ARM) deployment that deploys a number of supporting resource and creates an Azure DevOps (ADO) automation pipeline
 * An Azure DevOps pipeline, created by the above deployment, that will automatically deploy a WVD environment for you
 
-After clicking the "Deploy to Azure" button, the first of the two can be kicked off after providing some limited user input. Following that deployment, the DevOps pipeline will automatically start and deploy a WVD environment for you.The diagram below gives a good overview of all components of the QuickStart, as well as all the resources that are deployed in the process.
+After clicking the "Deploy to Azure" button, the first of the two can be kicked off after providing some limited user input. Following that deployment, the DevOps pipeline will automatically start and deploy a WVD environment for you. The diagram below gives a good overview of all components of the QuickStart, as well as all the resources that are deployed in the process.
 
 ![Deployment overview](images/newDiagram.PNG?raw=true)
 
