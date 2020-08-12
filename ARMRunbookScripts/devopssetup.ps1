@@ -1,4 +1,21 @@
-﻿#Initializing variables from automation account
+<#
+
+.DESCRIPTION
+This script is ran by the devOpsSetupRunbook and it does the following, in the order specified:
+ * Create a DevOps project in the newly created DevOps organization
+ * Create a service connection between the DevOps project and the Azure Subscription using the WVDServicePrincipal
+ * Create a git repository in the DevOps project
+ * Clones the wvdquickstart repository into the DevOps project's repository
+ * In case Azure AD DS is used, create a wvd test user group and user account. 
+ * In case native AD is used, remove the custom script extension from the domain controller vm and allow for 30 minutes to fetch the wvd test user group
+ * Generate appliedParameters.psd1 and variables.yml files and commit to the DevOps repository
+ * Allow access to the service connection from all DevOps pipelines
+ * Create a DevOps variable group that holds the credential secrets for the pipeline, and give the pipeline access to these secrets
+ * Set the optional notification email address in DevOps 
+
+#>
+
+#Initializing variables from automation account
 $SubscriptionId = Get-AutomationVariable -Name 'subscriptionid'
 $ResourceGroupName = Get-AutomationVariable -Name 'ResourceGroupName'
 $fileURI = Get-AutomationVariable -Name 'fileURI'
