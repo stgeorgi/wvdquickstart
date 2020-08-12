@@ -9,7 +9,7 @@ To understand how the WVD QuickStart works, this page will walk you through a co
 
 * For an in-depth breakdown of the ARM template used to configure DevOps, which is the template used when you click the blue "Deploy to Azure" button, please see <b><a href="armdeployment">Azure Resource Manager deployment: DevOps setup</a></b>
 * For an in-depth analysis of the DevOps automation used to deploy the WVD environment, please visit <b><a href="devops">DevOps Automation</a></b>
-* To understand this GitHub repository, its structure and all its individual files, the <b><a href="repo">Respository breakdown by file</a></b> gives an in-depth walkthrough of the entire repository with explanations on individual files' purpose and role.
+* To understand this GitHub repository, its structure and all its individual files, the <b><a href="repo">Repository breakdown by file</a></b> gives an in-depth walkthrough of the entire repository with explanations on individual files' purpose and role.
 
 ### <b>Conceptual Deployment Overview</b>
 As stated in the overview, the WVD QuickStart takes much of the WVD deployment complexity away, simplifying and automating the process, making the platform more accessible to non-expert users. As a WVD-centric end-to-end solution, the quickstart addressess reported pain points, challenges and feature gaps, empowering IT professionals to get started with WVD in a matter of clicks. This page will help you answer how exactly the QuickStart achieves that. The diagram below shows a high-level conceptual overview of the deployment with the WVD QuickStart:
