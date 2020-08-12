@@ -1,5 +1,16 @@
 # This version of the inputValidation script is only used when starting with a new or empty Azure subscription.
 
+<#
+
+.DESCRIPTION
+This script is ran by the inputValidationRunbook and validates the following:
+ * Azure admin credentials and owner & company administrator role
+ * If the required resource providers are registered (and if not, the script registers them)
+Then, this script will create the AAD DC Administrators user group and add a temporary admin user to it.
+Additionally, this script assigns the subscription Contributor role to the WVDServicePrincipal MSI
+
+#>
+
 #Initializing variables from automation account
 $SubscriptionId = Get-AutomationVariable -Name 'subscriptionid'
 $ResourceGroupName = Get-AutomationVariable -Name 'ResourceGroupName'
