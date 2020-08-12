@@ -163,7 +163,7 @@ The above part of the Automation Account deployment creates two Automation crede
              {
                 "type": "runbooks",
                 "apiVersion": "2015-01-01-preview",
-                "name": "checkCredentialsRunbook",
+                "name": "inputValidationRunbook",
                 "location": "[resourceGroup().location]",
                 "dependsOn": [
                     "[concat('Microsoft.Automation/automationAccounts/', variables('autoAccountName'))]",
@@ -176,7 +176,7 @@ The above part of the Automation Account deployment creates two Automation crede
                     "logProgress": false,
                     "logVerbose": false,
                     "publishContentLink": {
-                        "uri": "[concat(variables('_artifactsLocation'),'/ARMRunbookScripts/checkCredentials.ps1')]",
+                        "uri": "[concat(variables('_artifactsLocation'),'/ARMRunbookScripts/inputValidation.ps1')]",
                         "version": "1.0.0.0"
                     }
                 } 
@@ -188,14 +188,14 @@ The above part of the Automation Account deployment creates two Automation crede
                 "location": "[resourceGroup().location]",
                 "dependsOn": [
                     "[concat('Microsoft.Automation/automationAccounts/', variables('autoAccountName'))]",
-                    "[concat('Microsoft.Automation/automationAccounts/', variables('autoAccountName'), '/runbooks/checkCredentialsRunbook')]"
+                    "[concat('Microsoft.Automation/automationAccounts/', variables('autoAccountName'), '/runbooks/inputValidationRunbook')]"
                 ],
                 "tags": {
                     "key": "value"
                 },
                 "properties": {
                     "runbook": {
-                        "name": "checkCredentialsRunbook"
+                        "name": "inputValidationRunbook"
                     }
                 }
             },
@@ -230,7 +230,7 @@ The first runbook above runs the <a href="https://github.com/stgeorgi/wvdquickst
                 "dependsOn": [
                     "[concat('Microsoft.Automation/automationAccounts/', variables('autoAccountName'))]",
                     "[concat('Microsoft.Automation/automationAccounts/', variables('autoAccountName'), '/runbooks/ServicePrincipalRunbook')]",
-                    "[concat('Microsoft.Automation/automationAccounts/', variables('autoAccountName'), '/runbooks/checkCredentialsRunbook')]",
+                    "[concat('Microsoft.Automation/automationAccounts/', variables('autoAccountName'), '/runbooks/inputValidationRunbook')]",
                     "[concat('Microsoft.Automation/automationAccounts/', variables('autoAccountName'), '/jobs/', variables('jobGuid0'))]"
                 ],
                 "tags": {
