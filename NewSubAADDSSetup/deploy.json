@@ -50,7 +50,7 @@
         "keyvaultName": "[concat('keyvault', parameters('utcValue'))]",
         "assetsName": "[concat('assets', toLower(skip(parameters('utcValue'), 4)))]",
         "profilesName": "[concat('profiles', toLower(skip(parameters('utcValue'), 4)))]",
-        "autoAccountName": "[concat('automate', toLower(skip(parameters('utcValue'), 4)))]",
+        "autoAccountName": "[concat('automation', toLower(skip(parameters('utcValue'), 9)))]",
         "tenantId": "[subscription().tenantId]",
         "jobGuid0": "[guid(toLower(uniquestring(variables('identityName'), resourceGroup().id, parameters('utcValue'),'credentials')))]",
         "jobGuid": "[guid(toLower(uniquestring(variables('identityName'), resourceGroup().id, parameters('utcValue'),variables('autoAccountName'))))]",
@@ -222,7 +222,7 @@
                 {
                     "type": "runbooks",
                     "apiVersion": "2015-01-01-preview",
-                    "name": "checkCredentialsRunbook",
+                    "name": "inputValidationRunbook",
                     "location": "[resourceGroup().location]",
                     "dependsOn": [
                         "[concat('Microsoft.Automation/automationAccounts/', variables('autoAccountName'))]",
@@ -234,7 +234,7 @@
                         "logProgress": false,
                         "logVerbose": false,
                         "publishContentLink": {
-                            "uri": "[concat(variables('_artifactsLocation'),'/ARMRunbookScripts/AADDScheckCredentials.ps1')]",
+                            "uri": "[concat(variables('_artifactsLocation'),'/ARMRunbookScripts/AADDSinputValidation.ps1')]",
                             "version": "1.0.0.0"
                         }
                     } 
@@ -246,14 +246,14 @@
                     "location": "[resourceGroup().location]",
                     "dependsOn": [
                         "[concat('Microsoft.Automation/automationAccounts/', variables('autoAccountName'))]",
-                        "[concat('Microsoft.Automation/automationAccounts/', variables('autoAccountName'), '/runbooks/checkCredentialsRunbook')]"
+                        "[concat('Microsoft.Automation/automationAccounts/', variables('autoAccountName'), '/runbooks/inputValidationRunbook')]"
                     ],
                     "tags": {
                         "key": "value"
                     },
                     "properties": {
                         "runbook": {
-                            "name": "checkCredentialsRunbook"
+                            "name": "inputValidationRunbook"
                         }
                     }
                 },
@@ -285,7 +285,7 @@
                     "dependsOn": [
                         "[concat('Microsoft.Automation/automationAccounts/', variables('autoAccountName'))]",
                         "[concat('Microsoft.Automation/automationAccounts/', variables('autoAccountName'), '/runbooks/ServicePrincipalRunbook')]",
-                        "[concat('Microsoft.Automation/automationAccounts/', variables('autoAccountName'), '/runbooks/checkCredentialsRunbook')]",
+                        "[concat('Microsoft.Automation/automationAccounts/', variables('autoAccountName'), '/runbooks/inputValidationRunbook')]",
                         "[concat('Microsoft.Automation/automationAccounts/', variables('autoAccountName'), '/jobs/', variables('jobGuid0'))]"
                     ],
                     "tags": {
