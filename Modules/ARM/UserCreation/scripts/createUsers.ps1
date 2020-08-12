@@ -1,13 +1,39 @@
+<#
+
+.DESCRIPTION
+This script is ran by the main ARM template as a custom script extension on the domain controller vm to create an AD user group and an AD user (a test user for the WVD environment). 
+This user then gets synced to Azure Active Directory using the ADSync module.
+
+.PARAMETER domainName
+Name of the domain 
+
+.PARAMETER targetGroup
+Name of the test user group to be created
+
+.PARAMETER artifactsLocation
+URL of the GitHub repository
+
+.PARAMETER domainUsername
+username of the domain join account
+
+.PARAMETER domainPassword
+password of the domain join account. Not stored in any logs.
+
+.PARAMETER devOpsName
+Name of the DevOps organization to generate the test user password
+
+#>
+
 [CmdletBinding(SupportsShouldProcess = $true)]
 $ConfigurationFileName = "users.parameters.json"
 
 # Parameters below are passed by the main ARM template
-$domainName = $args[0]          # Name of the domain 
-$targetGroup = $args[1]         # Name of the test user group to be created
-$artifactsLocation = $args[2]   # URL of the GitHub repository
-$domainUsername = $args[3]      # username of the domain join account
-$domainPassword = $args[4]      # password of the domain join account. Not stored in any logs.
-$devOpsName = $args[5]          # Name of the DevOps organization to generate the test user password
+$domainName = $args[0]
+$targetGroup = $args[1]
+$artifactsLocation = $args[2]
+$domainUsername = $args[3]
+$domainPassword = $args[4]
+$devOpsName = $args[5]
 #####################################
 
 ##########
