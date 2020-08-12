@@ -1,4 +1,17 @@
-﻿#Initializing variables from automation account
+<#
+
+.DESCRIPTION
+This script is ran by the inputValidationRunbook and validates the following:
+ * Azure admin credentials and owner & company administrator role
+ * In case of using Azure AD DS, the domain join credentials
+ * If the required resource providers are registered (and if not, the script registers them)
+ * If the VNet and the SubNet can be found
+ * If the firewall allows the required URLs to be accessed
+Additionally, this script assigns the subscription Contributor role to the WVDServicePrincipal MSI
+
+#>
+
+#Initializing variables from automation account
 $SubscriptionId = Get-AutomationVariable -Name 'subscriptionid'
 $ResourceGroupName = Get-AutomationVariable -Name 'ResourceGroupName'
 $fileURI = Get-AutomationVariable -Name 'fileURI'
