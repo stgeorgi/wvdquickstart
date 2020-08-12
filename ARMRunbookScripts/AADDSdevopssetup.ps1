@@ -1,5 +1,23 @@
 # This version of the devops setup script is only used when starting with a new or empty Azure subscription.
 
+<#
+
+.DESCRIPTION
+This script is ran by the devOpsSetupRunbook and it does the following, in the order specified:
+ * Set the VNet's DNS settings to custom
+ * Create the domain join admin user and add it to the AAD DC Administrators group
+ * Create a DevOps project in the newly created DevOps organization
+ * Create a service connection between the DevOps project and the Azure Subscription using the WVDServicePrincipal
+ * Create a git repository in the DevOps project
+ * Clones the wvdquickstart repository into the DevOps project's repository
+ * Create a wvd test user group and user account. 
+ * Generate appliedParameters.psd1 and variables.yml files and commit to the DevOps repository
+ * Allow access to the service connection from all DevOps pipelines
+ * Create a DevOps variable group that holds the credential secrets for the pipeline, and give the pipeline access to these secrets
+ * Set the optional notification email address in DevOps 
+
+#>
+
 #Initializing variables from automation account
 $SubscriptionId = Get-AutomationVariable -Name 'subscriptionid'
 $ResourceGroupName = Get-AutomationVariable -Name 'ResourceGroupName'
