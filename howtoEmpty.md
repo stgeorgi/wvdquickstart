@@ -5,7 +5,7 @@ filename: howto
 ---
 
 ## <b>How To Use The WVD QuickStart With an Empty Subscription</b>
-On this page, the process of using the WVD QuickStart with an empty Azure subscription is laid out from start to finish. The QuickStart will configure Windows Virtual Desktop as well as Azure Active Directory Domain Services for you. All that is required is an empty Azure subscription as listed below, and after clicking one button, WVD will be ready for use within 2 hours. The video below shows a walkthrough of the entire deployment process.
+On this page, the process of using the WVD QuickStart with an empty Azure subscription is laid out from start to finish. If you don't have an Azure subscription yet, you can start a 30-day free trial <a href="https://azure.microsoft.com/en-us/" target="_blank">here</a>. The QuickStart will configure Windows Virtual Desktop as well as Azure Active Directory Domain Services for you. All that is required is an empty Azure subscription as listed below, and after clicking one button, WVD will be ready for use within 2 hours. The video below shows a walkthrough of the entire deployment process.
 
 <iframe width="100%" height="441" src="https://www.youtube.com/embed/rhw6KoM0cJ8" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
