@@ -22,9 +22,9 @@ A likely cause of a WVD QuickStart failure is if one or more of the <a href="how
 Sometimes, the DevOps pipeline will give you an error that has no clear cause. Often times, these are transient errors that can be fixed by simply running the pipeline again - By clicking "Run New" at the top of your screen. 
 
 ### <b>Runbook failed</b>
-If you get an error that looks like the image below, it means that the deployment was unable to authenticate to your Azure account, or that there was some other error with your current Azure environment. Note: While this section covers the checkCredentialsRunbook specifically, the process is the same for any runbook error in your deployment.
+If you get an error that looks like the image below, it means that the deployment was unable to authenticate to your Azure account, or that there was some other error with your current Azure environment. Note: While this section covers the inputValidationRunbook specifically, the process is the same for any runbook error in your deployment.
 ![Job failed](images/jobFail.PNG?raw=true)
-<br>To troubleshoot this issue, go to the resource group to which you are currently deploying, and click on the checkCredentialsRunbook as shown below:
+<br>To troubleshoot this issue, go to the resource group to which you are currently deploying, and click on the inputValidationRunbook as shown below:
 ![runbook](images/runbook.PNG?raw=true)
 Within that runbook, you will see that the job Failed, as shown below:
 ![Job failed](images/runbookFailed.PNG?raw=true)
