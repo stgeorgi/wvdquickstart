@@ -1,3 +1,11 @@
+<#
+
+.DESCRIPTION
+This script is ran by the servicePrincipalRunbook and it creates an app registration in Azure Active Directory. 
+This app registration is the WVDServicePrincipal that is used to setup the service connection between the DevOps project and the Azure subscription.
+
+#>
+
 #Initializing variables from automation account
 $SubscriptionId = Get-AutomationVariable -Name 'subscriptionid'
 $ResourceGroupName = Get-AutomationVariable -Name 'ResourceGroupName'
