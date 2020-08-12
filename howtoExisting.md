@@ -26,7 +26,7 @@ In order to successfully deploy a WVD environment with the QuickStart, a couple 
 Additionally, the QuickStart will set up <a href="https://dev.azure.com" target="_blank">Azure DevOps</a> for you. This is not a prerequisite that requires action from you as the user, but it's good to be aware of the fact that this particular service will be leveraged in this automation. Once you have all of these prerequisites satisfied, <a href="https://youtu.be/Tz3KgruovYc?t=360" target="_blank">this video</a> will show you a walkthrough of the QuickStart deployment outlined below.
 
 ### <b>Get started: ARM Deployment - Azure DevOps Setup</b>
-Once you've satisfied all the prerequisites, you are ready to deploy using the QuickStart! As explained in the <a href="concepts">Concepts</a> section, the deployment consists of two main components: an Azure Resource Manager (ARM) deployment and an Azure DevOps (ADO) pipeline. The first of the two will deploy a number of resources supporting the deployment automation, including the creation of a DevOps project and automation pipeline. By clicking the "Deploy to Azure" button, you will be taken to the Azure Portal for a custom deployment. There, you can fill out the required user input and click *purchase*. 
+Once you've satisfied all the prerequisites, you are ready to deploy using the QuickStart! As explained in the <a href="concepts">Concepts</a> section, the deployment consists of two main components: an Azure Resource Manager (ARM) deployment and an Azure DevOps (ADO) pipeline. The first of the two will deploy a number of resources supporting the deployment automation, including the creation of a DevOps project and automation pipeline. By clicking the "Deploy to Azure" button, you will be taken to the Azure Portal for a custom deployment. There, you can fill out the required user input and click *purchase*. It is recommended that you create a new resource group for the QuickStart to deploy in, as this will make it easier to delete its resources.
 
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https:%2F%2Fraw.githubusercontent.com%2Fstgeorgi%2Fwvdquickstart%2Fmaster%2Fdeploy.json" target="_blank">
     <img src="https://aka.ms/deploytoazurebutton"/>
@@ -55,3 +55,10 @@ Password: Taken from DevOps organization in the following way: If organization i
 (Disclaimer: You should change this password at your earliest convenience.)
 
 You should see a "WVD Workspace" appear, to which you can login to experience the best of Windows Virtual Desktop. Within this virtualized environment, your user will find Microsoft Office 365 amongst other built-in Microsoft applications. Additionally, since the QuickStart configures FSLogix profile management for you, a user profile will be created. This will be stored in the profiles storage account, in the *wvdprofiles* file share.
+
+### <b>Deleting the WVD environment and the QuickStart resources </b>
+In case you want to delete your WVD environment and all the QuickStart resources from your Azure subscription, there's a couple of steps to take. First, you can delete the resource group that the QuickStart was deployed in. This will delete your WVD environment and most of the QuickStart resources. Then, in the Azure portal, 
+* Go to Azure Active Directory --> App registrations and remove the "WVDServicePrincipal"
+* Go to Azure Active Directory --> Groups and remove the "WVDTestUsers" group
+* Go to Azure Active Directory --> Users and remove the "WVDTestUser001" user profile
+* Navigate to <a href="https://dev.azure.com" target="_blank">Azure DevOps</a> and delete the WVD QuickStart organization by going to the organization's settings and scrolling to the bottom of the page.
