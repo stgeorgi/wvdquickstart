@@ -9,7 +9,7 @@
             "DestinationFilePath": "003-NotepadPP/npp.7.8.7.Installer.exe"
         },
         {
-            "Url": "https://statics.teams.cdn.office.net/production-windows-x64/1.3.00.13565/Teams_windows_x64.msi",
+            "Url": "https://teams.microsoft.com/downloads/desktopurl?env=production&plat=windows&arch=x64&managedInstaller=true&download=true",
             "DestinationFilePath": "004-Teams/Teams_windows_x64.msi"
         }
     ]
