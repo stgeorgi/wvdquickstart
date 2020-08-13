@@ -456,7 +456,7 @@ $response = Invoke-RestMethod -Uri $url -Headers @{Authorization = "Basic $token
 write-output $response
 $variableGroupId = $response.id
 
-# Give pipeline permission to access the newly created variable group - Instead of the '1', could try 'WVDSecrets'
+# Give pipeline permission to access the newly created variable group
 $url = $("https://dev.azure.com/" + $orgName + "/" + $projectName + "/_apis/pipelines/pipelinePermissions/variablegroup/" + $variableGroupId + "?api-version=5.1-preview.1")
 write-output $url
 
