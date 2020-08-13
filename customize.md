@@ -100,7 +100,14 @@ In case the above customization is not sufficient to support your needs, a more 
 
 * Clone this repository (https://github.com/stgeorgi/wvdquickstart.git)
 * Commit your copy of the repository to a repository in your own account (NOTE: This repository must be public for the automation to work)
-* In your repository, go through the files and change all URLs with "stgeorgi/wvdquickstart" in it to point towards your repository. You will have to do this in the following files: *devopssetup.ps1, wvdsessionhost.parameters.template.json, Invoke-GeneralDeployment.ps1,* and the main ARM template's *deploy.json.*. Additionally, for the "Deploy to Azure" button to work properly, you should change the URL in the main Readme.MD.
+* In your repository, go through the files and change all URLs with "samvdjagt/wvdquickstart" in it to point towards your repository. You will have to do this in the following files: 
+  * Line 197 in ARMRunbookScripts/devopssetup.ps1
+  * Line 234 in ARMRunbookScripts/AADDSdevopssetup.ps1
+  * Line 74 in QS-WVD/static/templates/pipelineInput/wvdsessionhost.parameters.template.json
+  * Line 20 in SharedDeploymentFunctions/Invoke-GeneralDeployment.ps1
+  * Line 80 in the deploy.json file in the main repo
+  * Line 39 in NewSubAADDSSetup/deploy.json
+  * In both the main README.md and the NewSubAADDSSetup/README.md files for the Deploy to Azure buttons to work.
 * You should now be able to customize anything you want. To customize the initial ARM deployment, you can make edits in the main folder's *deploy.json* file.
 
 ### <b>Example: Add a Custom Script Extension</b>
