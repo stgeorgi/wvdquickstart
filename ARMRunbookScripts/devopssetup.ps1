@@ -254,11 +254,13 @@ $principalIds = $split[0]
 Write-Output "Found user group $targetGroup with principal Id $principalIds"
 
 # Removing the Custom Script Extension from domain controller VM. When re-running deployment, this means it will re-run the CSE, which can be used to create additional users for example
-$VMCustomScriptExtension = Get-AzVMCustomScriptExtension -ResourceGroupName $virtualNetworkResourceGroupName -VMName $computerName -Name "userCreation"
-if ($VMCustomScriptExtension -ne $null) {
-  Write-Output "In case AD is used, removing the userCreation CSE from domain controller VM..."
-  Remove-AzVMCustomScriptExtension -ResourceGroupName $virtualNetworkResourceGroupName -VMName $computerName -Name "userCreation" -Force
-  Write-Output "userCreation CSE removed."
+if ($identityApproach -eq "AD") {
+	$VMCustomScriptExtension = Get-AzVMCustomScriptExtension -ResourceGroupName $virtualNetworkResourceGroupName -VMName $computerName -Name "userCreation"
+	if ($VMCustomScriptExtension -ne $null) {
+	  Write-Output "In case AD is used, removing the userCreation CSE from domain controller VM..."
+	  Remove-AzVMCustomScriptExtension -ResourceGroupName $virtualNetworkResourceGroupName -VMName $computerName -Name "userCreation" -Force
+	  Write-Output "userCreation CSE removed."
+	}
 }
 
 # Get ID of the commit we just pushed, needed for the next commit below
