@@ -97,10 +97,10 @@ if ($context -eq $null)
 }
 
 # Get token for web request authorization
-$tenant = (Get-AzTenant).TenantId
+$tenant = $context.Tenant.Id
 $azureRmProfile = [Microsoft.Azure.Commands.Common.Authentication.Abstractions.AzureRmProfileProvider]::Instance.Profile
 $profileClient = New-Object Microsoft.Azure.Commands.ResourceManager.Common.RMProfileClient($azureRmProfile)
-$pat = $profileClient.AcquireAccessToken($context.Subscription.TenantId).AccessToken
+$pat = $profileClient.AcquireAccessToken($context.Tenant.Id).AccessToken
 $token = $pat
 $token = [System.Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes(":$($token)"))
 
