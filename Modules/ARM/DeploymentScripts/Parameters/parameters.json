@@ -1,0 +1,33 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "scriptName": {
+            "value": "test"
+        },
+        "userMsiName": {
+            "value": "imagingMSI"
+        },
+        "kind": {
+            "value": "AzurePowerShell"
+        },
+        "azPowerShellVersion": {
+            "value": "3.0"
+        },
+        "scriptContent": {
+            "value": ""
+        },
+        "retentionInterval": {
+            "value": "P10M"
+        },
+        "runOnce": {
+            "value": false
+        },
+        "cleanupPreference": {
+            "value": "Always"
+        },
+        "timeout": {
+            "value": "PT30M"
+        }
+    }
+}

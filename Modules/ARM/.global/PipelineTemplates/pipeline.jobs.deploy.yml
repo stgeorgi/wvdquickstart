@@ -1,0 +1,80 @@
+parameters:
+  moduleName: ''
+  resourceGroupName: ''
+  modulePath: ''
+  parameterFilePaths: ''
+  location: '$(location)'
+  
+jobs:
+- job:
+  displayName: Deploy
+  pool:
+    ${{ if eq(variables['vmImage'], '') }}:
+      name: $(poolName)
+    ${{ if eq(variables['poolName'], '') }}:
+      vmImage: $(vmImage)
+  steps:
+  - ${{ each parameterFilePath in parameters.parameterFilePaths }}:
+    - task: AzurePowerShell@4
+      displayName: 'Deploy [${{ parameters.moduleName }}] via connection [$(serviceconnection)]'
+      inputs:
+        azureSubscription: $(serviceConnection)
+        azurePowerShellVersion: LatestVersion
+        ScriptType: InlineScript
+        inline: |
+          $templateFilePath = "$(Build.Repository.LocalPath)/${{ parameters.modulePath }}/deploy.json"
+          $DeploymentInputs = @{
+            Name                  = "${{ parameters.moduleName }}-$(Get-Date -Format yyyyMMddHHMMss)"
+            TemplateFile          = $templateFilePath
+            TemplateParameterFile = "$(Build.Repository.LocalPath)/${{ parameterFilePath }}"
+            Verbose               = $true
+            ErrorAction           = "Stop"
+          }
+
+          $deploymentSchema = (ConvertFrom-Json (Get-Content -Raw -Path $templateFilePath)).'$schema'
+          switch -regex ($deploymentSchema) {
+            '\/deploymentTemplate.json#$' {
+              Write-Verbose 'Handling resource group level deployment' -Verbose
+              if (-not (Get-AzResourceGroup -Name '${{ parameters.resourceGroupName }}' -ErrorAction SilentlyContinue)) {
+                Write-Verbose 'Deploying resource group [${{ parameters.resourceGroupName }}]' -Verbose
+                New-AzResourceGroup -Name '${{ parameters.resourceGroupName }}' -Location '${{ parameters.location }}'
+              }
+              if ('$(removeDeployment)' -eq 'true') {
+                Write-Output "Because the subsequent removal is enabled after the Module ${{ parameters.moduleName }} has been deployed, the following tags (moduleName: ${{ parameters.moduleName }}) are now set on the resource."
+                Write-Output "This is necessary so that the later running Removal Stage can remove the corresponding Module from the Resource Group again."
+                $DeploymentInputs += @{ 
+                  Tags = @{moduleName = "${{ parameters.moduleName }}"; }
+                }
+              }
+              New-AzResourceGroupDeployment @DeploymentInputs -ResourceGroupName '${{ parameters.resourceGroupName }}'
+              break
+            }
+            '\/subscriptionDeploymentTemplate.json#$' {
+              Write-Verbose 'Handling subscription level deployment' -Verbose
+              $DeploymentInputs += @{
+                Location = '${{ parameters.location }}'
+              }
+              New-AzSubscriptionDeployment @DeploymentInputs
+              break
+            }
+            '\/managementGroupDeploymentTemplate.json#$' {
+              Write-Verbose 'Handling management group level deployment' -Verbose
+              $DeploymentInputs += @{
+                ManagementGroupId = '$(managementGroupId)'
+                Location          = '${{ parameters.location }}'
+              } 
+              New-AzManagementGroupDeployment @DeploymentInputs
+              break
+            }
+            '\/tenantDeploymentTemplate.json#$' {
+              Write-Verbose 'Handling tenant level deployment' -Verbose
+              $DeploymentInputs += @{
+                Location = '${{ parameters.location }}'
+              }
+              New-AzTenantDeployment @DeploymentInputs
+              break
+            }
+            default {
+              throw "[$deploymentSchema] is a non-supported ARM template schema"
+            }
+          }
