@@ -1,0 +1,302 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "keyVaultName": {
+            "type": "string",
+            "minLength": 1,
+            "metadata": {
+                "description": "Required. Name of the Azure Key Vault"
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+                "description": "Optional. Location for all resources."
+            }
+        },
+        "accessPolicies": {
+            "type": "array",
+            "defaultValue": [
+            ],
+            "metadata": {
+                "description": "Optional. Array of access policies object"
+            }
+        },
+        "secretsObject": {
+            "type": "secureObject",
+            "defaultValue": {
+                "secrets": [
+                ]
+            },
+            "metadata": {
+                "description": "Optional. All secrets [{\"secretName\":\"\",\"secretValue\":\"\"} wrapped in a secure object]"
+            }
+        },
+        "enableVaultForDeployment": {
+            "type": "bool",
+            "defaultValue": true,
+            "allowedValues": [
+                true,
+                false
+            ],
+            "metadata": {
+                "description": "Optional. Specifies if the vault is enabled for deployment by script or compute"
+            }
+        },
+        "enableVaultForTemplateDeployment": {
+            "type": "bool",
+            "defaultValue": true,
+            "allowedValues": [
+                true,
+                false
+            ],
+            "metadata": {
+                "description": "Optional. Specifies if the vault is enabled for a template deployment"
+            }
+        },
+        "enableVaultForDiskEncryption": {
+            "type": "bool",
+            "defaultValue": true,
+            "allowedValues": [
+                true,
+                false
+            ],
+            "metadata": {
+                "description": "Optional. Specifies if the azure platform has access to the vault for enabling disk encryption scenarios."
+            }
+        },
+        "enableSoftDelete": {
+            "type": "bool",
+            "defaultValue": true,
+            "metadata": {
+                "description": "Optional. Switch to enable Key Vault's soft delete feature."
+            }
+        },
+        "vaultSku": {
+            "type": "string",
+            "defaultValue": "Premium",
+            "allowedValues": [
+                "Premium",
+                "Standard"
+            ],
+            "metadata": {
+                "description": "Optional. Specifies the SKU for the vault"
+            }
+        },
+        "networkAcls": {
+            "type": "object",
+            "defaultValue": {
+            },
+            "metadata": {
+                "description": "Optional. Service endpoint object information"
+            }
+        },
+        "vNetId": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Optional. Virtual Network resource identifier, if networkAcls is passed, this value must be passed as well"
+            }
+        },
+        "diagnosticLogsRetentionInDays": {
+            "type": "int",
+            "defaultValue": 365,
+            "minValue": 0,
+            "maxValue": 365,
+            "metadata": {
+                "description": "Optional. Specifies the number of days that logs will be kept for; a value of 0 will retain data indefinitely."
+            }
+        },
+        "diagnosticStorageAccountId": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Optional. Resource identifier of the Diagnostic Storage Account."
+            }
+        },
+        "workspaceId": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Optional. Resource identifier of Log Analytics."
+            }
+        },
+        "eventHubAuthorizationRuleId": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Optional. Resource ID of the event hub authorization rule for the Event Hubs namespace in which the event hub should be created or streamed to."
+            }
+        },
+        "eventHubName": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Optional. Name of the event hub within the namespace to which logs are streamed. Without this, an event hub is created for each log category."
+            }
+        },
+        "lockForDeletion": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Optional. Switch to lock Key Vault from deletion."
+            }
+        },
+        "tags": {
+            "type": "object",
+            "defaultValue": {
+            },
+            "metadata": {
+                "description": "Optional. Resource tags."
+            }
+        }
+    },
+    "variables": {
+        "deployServiceEndpoint": "[not(empty(parameters('networkAcls')))]",
+        "virtualNetworkRules": {
+            "copy": [
+                {
+                    "name": "virtualNetworkRules",
+                    "count": "[if(not(variables('deployServiceEndpoint')), 0, length(parameters('networkAcls').virtualNetworkRules))]",
+                    "input": {
+                        "id": "[concat(parameters('vNetId'), '/subnets/', parameters('networkAcls').virtualNetworkRules[copyIndex('virtualNetworkRules')].subnet)]"
+                    }
+                }
+            ]
+        },
+        "networkAcls": {
+            "bypass": "[if(not(variables('deployServiceEndpoint')), json('null'), parameters('networkAcls').bypass)]",
+            "defaultAction": "[if(not(variables('deployServiceEndpoint')), json('null'), parameters('networkAcls').defaultAction)]",
+            "virtualNetworkRules": "[if(not(variables('deployServiceEndpoint')), json('null'), if(equals(length(parameters('networkAcls').virtualNetworkRules), 0), variables('emptyArray'), variables('virtualNetworkRules').virtualNetworkRules))]",
+            "ipRules": "[if(not(variables('deployServiceEndpoint')), json('null'), if(equals(length(parameters('networkAcls').ipRules), 0), variables('emptyArray'), parameters('networkAcls').ipRules))]"
+        },
+        "emptyArray": [
+        ],
+        "diagnosticsMetrics": [
+            {
+                "category": "AllMetrics",
+                "timeGrain": null,
+                "enabled": true,
+                "retentionPolicy": {
+                    "enabled": true,
+                    "days": "[parameters('diagnosticLogsRetentionInDays')]"
+                }
+            }
+        ],
+        "diagnosticsLogs": [
+            {
+                "category": "AuditEvent",
+                "enabled": true,
+                "retentionPolicy": {
+                    "enabled": true,
+                    "days": "[parameters('diagnosticLogsRetentionInDays')]"
+                }
+            }
+        ]
+    },
+    "resources": [
+        {
+            "type": "Microsoft.KeyVault/vaults",
+            "apiVersion": "2019-09-01",
+            "name": "[parameters('keyVaultName')]",
+            "location": "[parameters('location')]",
+            "tags": "[parameters('tags')]",
+            "properties": {
+                "enabledForDeployment": "[parameters('enableVaultForDeployment')]",
+                "enabledForTemplateDeployment": "[parameters('enableVaultForTemplateDeployment')]",
+                "enabledForDiskEncryption": "[parameters('enableVaultForDiskEncryption')]",
+                "enableSoftDelete": "[parameters('enableSoftDelete')]",
+                "tenantId": "[subscription().tenantId]",
+                "accessPolicies": "[parameters('accessPolicies')]",
+                "sku": {
+                    "name": "[parameters('vaultSku')]",
+                    "family": "A"
+                },
+                "networkAcls": "[if(not(variables('deployServiceEndpoint')), json('null'), variables('networkAcls'))]"
+            },
+            "resources": [
+                {
+                    "type": "providers/locks",
+                    "apiVersion": "2016-09-01",
+                    "condition": "[parameters('lockForDeletion')]",
+                    "name": "Microsoft.Authorization/keyVaultDoNotDelete",
+                    "dependsOn": [
+                        "[concat('Microsoft.KeyVault/vaults/', parameters('keyVaultName'))]"
+                    ],
+                    "comments": "Resource lock on Azure Key Vault",
+                    "properties": {
+                        "level": "CannotDelete"
+                    }
+                },
+                {
+                    "type": "Microsoft.KeyVault/vaults/providers/diagnosticsettings",
+                    "apiVersion": "2017-05-01-preview",
+                    "name": "[concat(parameters('keyVaultName'), '/Microsoft.Insights/service')]",
+                    "location": "[parameters('location')]",
+                    "condition": "[or(not(empty(parameters('diagnosticStorageAccountId'))),not(empty(parameters('workspaceId'))),not(empty(parameters('eventHubAuthorizationRuleId'))),not(empty(parameters('eventHubName'))))]",
+                    "dependsOn": [
+                        "[concat('Microsoft.KeyVault/vaults/', parameters('keyVaultName'))]"
+                    ],
+                    "properties": {
+                        "storageAccountId": "[if(empty(parameters('diagnosticStorageAccountId')), json('null'), parameters('diagnosticStorageAccountId'))]",
+                        "workspaceId": "[if(empty(parameters('workspaceId')), json('null'), parameters('workspaceId'))]",
+                        "eventHubAuthorizationRuleId": "[if(empty(parameters('eventHubAuthorizationRuleId')), json('null'), parameters('eventHubAuthorizationRuleId'))]",
+                        "eventHubName": "[if(empty(parameters('eventHubName')), json('null'), parameters('eventHubName'))]",
+                        "metrics": "[if(and(empty(parameters('diagnosticStorageAccountId')), empty(parameters('workspaceId')), empty(parameters('eventHubAuthorizationRuleId')), empty(parameters('eventHubName'))), json('null'), variables('diagnosticsMetrics'))]",
+                        "logs": "[if(and(empty(parameters('diagnosticStorageAccountId')), empty(parameters('workspaceId')), empty(parameters('eventHubAuthorizationRuleId')), empty(parameters('eventHubName'))), json('null'), variables('diagnosticsLogs'))]"
+                    }
+                }
+            ]
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "apiVersion": "2015-06-01",
+            "condition": "[not(empty(parameters('secretsObject').secrets))]",
+            "name": "[if(empty(parameters('secretsObject').secrets), concat(parameters('keyVaultName'), '/', 'dummy'), concat(parameters('keyVaultName'), '/', parameters('secretsObject').secrets[copyIndex()].secretName))]",
+            "properties": {
+                "value": "[parameters('secretsObject').secrets[copyIndex()].secretValue]"
+            },
+            "dependsOn": [
+                "[concat('Microsoft.KeyVault/vaults/', parameters('keyVaultName'))]"
+            ],
+            "copy": {
+                "name": "secretsCopy",
+                "count": "[length(parameters('secretsObject').secrets)]"
+            }
+        }
+    ],
+    "functions": [
+    ],
+    "outputs": {
+        "keyVaultResourceId": {
+            "type": "string",
+            "value": "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]",
+            "metadata": {
+                "description": "The Resource Id of the Key Vault."
+            }
+        },
+        "keyVaultResourceGroup": {
+            "type": "string",
+            "value": "[resourceGroup().name]",
+            "metadata": {
+                "description": "The name of the Resource Group the Key Vault was created in."
+            }
+        },
+        "keyVaultName": {
+            "type": "string",
+            "value": "[parameters('keyVaultName')]",
+            "metadata": {
+                "description": "The Name of the Key Vault."
+            }
+        },
+        "keyVaultUrl": {
+            "type": "string",
+            "value": "[reference(resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName')),'2016-10-01').vaultUri]",
+            "metadata": {
+                "description": "The URL of the Key Vault."
+            }
+        }
+    }
+}

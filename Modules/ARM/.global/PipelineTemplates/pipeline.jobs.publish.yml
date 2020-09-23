@@ -1,0 +1,113 @@
+parameters:
+  moduleName: ''
+  versionOption: ''
+  moduleVersion: ''
+
+jobs:
+- job:
+  displayName: Publish Module
+  pool:
+    ${{ if eq(variables['vmImage'], '') }}:
+      name: $(poolName)
+    ${{ if eq(variables['poolName'], '') }}:
+      vmImage: $(vmImage)
+  steps:
+    - task: CopyFiles@2
+      displayName: Filter folders
+      inputs:
+        Contents: |
+          $(modulePath)/Scripts/*
+          $(modulePath)/Parameters/*
+          $(modulePath)/deploy.json
+        targetFolder: $(Build.ArtifactStagingDirectory)
+    - task: PublishBuildArtifacts@1
+      displayName: Publish Build Artifact
+      inputs:
+        PathtoPublish: $(Build.ArtifactStagingDirectory)/$(modulesPath)
+        ArtifactName: $(moduleName)-$(moduleVersion)
+    
+    - task: UniversalPackages@0
+      displayName: Publish Universal Package
+      condition: ne(variables.artifactFeedName, '')
+      inputs:
+        command: publish
+        publishDirectory: $(Build.ArtifactStagingDirectory)/$(modulesPath)
+        vstsFeedPublish: $(System.TeamProject)/$(artifactFeedName)
+        vstsFeedPackagePublish: ${{ parameters.moduleName }}
+        versionOption: ${{ parameters.versionOption }}
+        versionPublish: ${{ parameters.moduleVersion }}
+        packagePublishDescription: '$(moduleName) Module'
+
+    - task: AzureCLI@2
+      displayName: Copy Module to [$(componentStorageAccountName)]
+      enabled: true
+      inputs:
+        azureSubscription: $(serviceConnection)
+        scriptType: pscore
+        scriptLocation: inlineScript
+        failOnStandardError: false
+        inlineScript: |
+          
+          az storage account create --name "$(componentStorageAccountName)" `
+          --resource-group "$(componentStorageAccountResourceGroupName)" `
+          --kind StorageV2
+
+          az storage container create --name "$(componentStorageContainerName)" `
+          --account-name "$(componentStorageAccountName)" `
+          --subscription "$(componentStorageAccountSubscriptionId)"
+
+
+          $res = az storage blob list --container-name "$(componentStorageContainerName)" --account-name "$(componentStorageAccountName)" --output table --prefix "Modules/ARM/$(moduleName)" -o json | ConvertFrom-Json
+          if ( -not $res ) {
+            Write-Verbose 'No version detected in storage account [$(componentStorageAccountName)]. Creating new.' -Verbose
+            $latestVersion = New-Object System.Version('0.0.0')
+          }
+          else {
+            $uniqueVersions = $res.Name | ForEach-Object { $_.Split('/')[3] } | Unique | Where-Object { $_ -like '*.*.*' } # remove Where-object for working example
+            $latestVersion = (($uniqueVersions -as [Version[]]) | Measure-Object -Maximum).Maximum
+            Write-Verbose "Published versions detected in storage account [$(componentStorageAccountName)]. Fetched latest [$latestVersion]." -Verbose
+          }
+
+          switch ('$(versionOption)') {
+            'major' {
+              Write-Verbose 'Apply version update on "major" level' -Verbose
+              $newVersion = (New-Object -TypeName System.Version -ArgumentList ($latestVersion.Major + 1), $latestVersion.Minor, $latestVersion.Build).ToString()
+              break
+            }
+
+            'minor' {
+              Write-Verbose 'Apply version update on "minor" level' -Verbose
+              $newVersion = (New-Object -TypeName System.Version -ArgumentList $latestVersion.Major, ($latestVersion.Minor + 1), $latestVersion.Build).ToString()
+              break
+            }
+
+            'patch' {
+              Write-Verbose 'Apply version update on "patch" level' -Verbose
+              $newVersion = (New-Object -TypeName System.Version -ArgumentList $latestVersion.Major, $latestVersion.Minor, ($latestVersion.Build + 1)).ToString()
+              break
+            }
+
+            'custom' {
+              Write-Verbose 'Apply version update on "Custom" level' -Verbose
+              $newVersion = '$(moduleVersion)'
+              $newVersionObject = New-Object System.Version('$(moduleVersion)')
+              if ($newVersionObject -lt $latestVersion -or $newVersionObject -eq $latestVersion) {
+                  throw ("The provided custom version [{0}] must be higher than the current latest version [{1}] published in the storage account [{2}]" -f $newVersionObject.ToString(), $latestVersion.ToString(), '$(componentStorageAccountName)')
+              }
+              break
+            }
+            
+            default {
+              throw "Unsupported version option: $(moduleVersion)."
+            }
+          }
+          
+          Write-Output ""
+          Write-Output "Copying the [$(moduleName)] Module to the folder [$newVersion] of the storage account [$(componentStorageAccountName)]..."
+          Write-Output ""
+
+          az storage blob sync --container "$(componentStorageContainerName)" `
+          --source "$(Build.ArtifactStagingDirectory)/$(modulePath)" `
+          --destination "$(modulePath)/$newVersion" `
+          --account-name "$(componentStorageAccountName)" `
+          --subscription "$(componentStorageAccountSubscriptionId)"
