@@ -4,7 +4,7 @@ Welcome to the WVD QuickStart GitHub repository! The WVD QuickStart is a solutio
 
 By clicking the "Deploy to Azure" button, you will be taken to the Azure Portal for a custom deployment. There, you can fill out the required user input and click "deploy". This will set up some resources needed for the QuickStart, including an Azure DevOps project.
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https:%2F%2Fraw.githubusercontent.com%2Fstgeorgi%2Fwvdquickstart%2Fmaster%2Fdeploy.json" target="_blank">
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https:%2F%2Fraw.githubusercontent.com%2FEighty20Solutions%2Fwvdquickstart%2Fmaster%2Fdeploy.json" target="_blank">
     <img src="https://aka.ms/deploytoazurebutton"/>
 </a><br>
 
