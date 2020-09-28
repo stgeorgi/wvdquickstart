@@ -15,8 +15,7 @@
             "value": "[vmSize]"
         },
         "imageReference": {
-            "value": {
-                "id": "<overwrittenByPipeline>",
+            "value": {                
                 "publisher": "[publisher]",
                 "offer": "[offer]",
                 "sku": "[sku]",
