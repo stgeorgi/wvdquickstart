@@ -70,7 +70,7 @@
                 "settings": {
                     "wmfVersion": "latest",
                     "configuration": {
-                        "url": "https://github.com/stgeorgi/wvdquickstart/raw/master/Uploads/Configuration.zip",
+                        "url": "https://github.com/Eighty20Solutions/wvdquickstart/raw/master/Uploads/Configuration.zip",
                         "script": "Configuration.ps1",
                         "function": "AddSessionHost"
                     },

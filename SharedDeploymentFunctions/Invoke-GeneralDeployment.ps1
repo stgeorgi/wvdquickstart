@@ -17,7 +17,7 @@ function Invoke-GeneralDeployment {
 
   process {
 
-    $templateUri = 'https://raw.githubusercontent.com/stgeorgi/wvdquickstart/master/Modules/ARM/{0}/deploy.json' -f $moduleName
+    $templateUri = 'https://raw.githubusercontent.com/Eighty20Solutions/wvdquickstart/master/Modules/ARM/{0}/deploy.json' -f $moduleName
 
     Write-Verbose "Parameters are" -Verbose
     $param = ConvertFrom-Json (Get-Content -Raw -Path $parameterFilePath)

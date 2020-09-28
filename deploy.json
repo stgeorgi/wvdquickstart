@@ -77,7 +77,7 @@
         }
     },
     "variables": {
-        "_artifactsLocation": "https://raw.githubusercontent.com/stgeorgi/wvdquickstart/master",
+        "_artifactsLocation": "https://raw.githubusercontent.com/Eighty20Solutions/wvdquickstart/master",
         "AdminPasswordSecret": "adminPassword",
         "existingDomainUsername": "[first(split(parameters('DomainJoinAccountUPN'), '@'))]",
         "existingDomainName": "[split(parameters('DomainJoinAccountUPN'), '@')[1]]",
