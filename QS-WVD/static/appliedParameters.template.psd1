@@ -66,9 +66,9 @@
     sigImageDefinitionId                  = "<sigImageDefinitionId>"            # [Not used, can be used for custom imaging]
     imageDefinitionName                   = "W10-20H1-O365"                     # [Not used, can be used for custom imaging]
     osType                                = "Windows"                           # default
-    publisher                             = "MicrosoftWindowsDesktop"           # default
+    publisher                             = "microsoftwindowsdesktop"           # default
     offer                                 = "office-365"                        # This image includes Office 365
-    sku                                   = "20h1-evd-0365"                     # Points to Windows 10 Enterprise Multi-Session, build 2004
+    sku                                   = "20h1-evd-o365pp"                   # Points to Windows 10 Enterprise Multi-Session, build 2004
     imageVersion                          = "latest"                            # default
     ######################
 
