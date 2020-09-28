@@ -11,7 +11,7 @@
         "azureAdminUpn": {
             "type": "string",
             "metadata": {
-                "description": "The UPN of the account that you're currently logged in with on the Azure Portal. This account should at least have the 'contributor' or 'owner' role on the subscription level for the deployment to succeed. The template will fail if you enter a user account that requires MFA."
+                "description": "The UPN of the account that you're currently logged in with on the Azure Portal in the format account@domain.com. This account should at least have the 'contributor' or 'owner' role on the subscription level for the deployment to succeed. The template will fail if you enter a user account that requires MFA. Additionally, you must be signed in to Azure using the same credentails when you start the deployment."
             }
         },
         "azureAdminPassword": {
