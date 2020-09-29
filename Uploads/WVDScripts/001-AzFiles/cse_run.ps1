@@ -170,11 +170,11 @@ foreach ($config in $azfilesconfig.azfilesconfig) {
             Set-Location $PSScriptRoot
 
             LogInfo("Using PSExec, set execution policy for the admin user")
-            $scriptBlock = { .\psexec /accepteula -h -u $username -p $domainJoinPassword -c "powershell.exe" Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser -Force }
+            $scriptBlock = { .\psexec /accepteula -h -u $username -p $domainJoinPassword -c -f "powershell.exe" Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser -Force }
             Invoke-Command $scriptBlock -Verbose
 
             LogInfo("Execution policy for the admin user set. Now joining the storage account through another PSExec command... This command takes roughly 5 minutes")
-            $scriptBlock = { .\psexec /accepteula -h -u $username -p $domainJoinPassword -c "powershell.exe" "$scriptPath -S $StorageAccountName -RG $ResourceGroupName -U $AzureAdminUpn -P $AzureAdminPassword" }
+            $scriptBlock = { .\psexec /accepteula -h -u $username -p $domainJoinPassword -c -f "powershell.exe" "$scriptPath -S $StorageAccountName -RG $ResourceGroupName -U $AzureAdminUpn -P $AzureAdminPassword" }
             LogInfo("Scriptblock to execute: $scriptBlock")
             Invoke-Command $scriptBlock -Verbose
 
