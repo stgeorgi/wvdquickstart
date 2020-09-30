@@ -362,7 +362,8 @@ stages:
 
                     Invoke-GeneralDeployment @functionInput -Verbose
                   errorActionPreference: stop
-                  azurePowerShellVersion: LatestVersion
+                  azurePowerShellVersion: OtherVersion
+                  preferredAzurePowerShellVersion: 3.5.0
                 enabled: true 
 
   - deployment: Deploy_Workspace
@@ -402,7 +403,8 @@ stages:
 
                     Invoke-GeneralDeployment @functionInput -Verbose
                   errorActionPreference: stop
-                  azurePowerShellVersion: LatestVersion
+                  azurePowerShellVersion: OtherVersion
+                  preferredAzurePowerShellVersion: 3.5.0
                 enabled: true
 
   - deployment: Deploy_RemoteAppGroup
