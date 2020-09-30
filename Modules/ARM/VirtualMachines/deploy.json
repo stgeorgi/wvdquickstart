@@ -680,10 +680,10 @@
         ],
         "vmNames": "[if( empty( parameters('vmNames') ), variables('vmGeneratedNames'), parameters('vmNames') )]",
         "accountSasProperties": {
-            "signedServices": "b", //Blob (b), Queue (q), Table (t), File (f).
-            "signedPermission": "r", //Read (r), Write (w), Delete (d), List (l), Add (a), Create (c), Update (u) and Process (p)
-            "signedExpiry": "[dateTimeAdd(parameters('baseTime'), parameters('sasTokenValidityLength'))]", //format: 2017-05-24T10:42:03Z
-            "signedResourceTypes": "o", //Service (s): Access to service-level APIs; Container (c): Access to container-level APIs; Object (o): Access to object-level APIs for blobs, queue messages, table entities, and files.
+            "signedServices": "b", 
+            "signedPermission": "r", 
+            "signedExpiry": "[dateTimeAdd(parameters('baseTime'), parameters('sasTokenValidityLength'))]", 
+            "signedResourceTypes": "o", 
             "signedProtocol": "https"
         }
     },
@@ -933,8 +933,7 @@
                     "windowsConfiguration": "[if(empty(parameters('windowsConfiguration')), json('null'),parameters('windowsConfiguration'))]",
                     "linuxConfiguration": "[if(empty(parameters('linuxConfiguration')), json('null'),parameters('linuxConfiguration'))]",
                     "secrets": "[parameters('certificatesToBeInstalled')]",
-                    "allowExtensionOperations": "[parameters('allowExtensionOperations')]"
-                    //"requireGuestProvisionSignal": "[parameters('requireGuestProvisionSignal')]"
+                    "allowExtensionOperations": "[parameters('allowExtensionOperations')]"                    
                 },
                 "networkProfile": {
                     "networkInterfaces": [
@@ -1210,7 +1209,7 @@
                 }
             ]
         },
-        // This WindowsCustomScriptExtension has to be a top level resource, as the 'fileUris' propert copy loop only works if this extension is not a nested resource within the VM.
+        
         {
             "apiVersion": "2019-07-01",
             "type": "Microsoft.Compute/virtualMachines/extensions",
