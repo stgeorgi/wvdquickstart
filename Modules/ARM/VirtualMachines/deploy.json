@@ -680,10 +680,10 @@
         ],
         "vmNames": "[if( empty( parameters('vmNames') ), variables('vmGeneratedNames'), parameters('vmNames') )]",
         "accountSasProperties": {
-            "signedServices": "b", 
-            "signedPermission": "r", 
-            "signedExpiry": "[dateTimeAdd(parameters('baseTime'), parameters('sasTokenValidityLength'))]", 
-            "signedResourceTypes": "o", 
+            "signedServices": "b", //Blob (b), Queue (q), Table (t), File (f).
+            "signedPermission": "r", //Read (r), Write (w), Delete (d), List (l), Add (a), Create (c), Update (u) and Process (p)
+            "signedExpiry": "[dateTimeAdd(parameters('baseTime'), parameters('sasTokenValidityLength'))]", //format: 2017-05-24T10:42:03Z
+            "signedResourceTypes": "o", //Service (s): Access to service-level APIs; Container (c): Access to container-level APIs; Object (o): Access to object-level APIs for blobs, queue messages, table entities, and files.
             "signedProtocol": "https"
         }
     },
