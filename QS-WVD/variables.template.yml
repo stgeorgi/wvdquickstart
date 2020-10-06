@@ -17,6 +17,9 @@ variables:
 - name: location 
   value: "[location]"
 
+  - name: wvdMetadataLocation 
+  value: "[wvdMetadataLocation]"
+
 #endregion
 
 #######################
