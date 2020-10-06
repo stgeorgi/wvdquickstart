@@ -36,9 +36,18 @@
         },
      "wvdMetadataLocation": {
       "type": "string",
-      "defaultValue": "westus",
+      "allowedValues": [
+        "eastus",
+        "eastus2",
+        "centralus",
+        "northcentralus",
+        "southcentralus",
+        "westcentralus",
+        "westus",
+        "westus2"
+    ],"defaultValue": "westus",
       "metadata": {
-        "description": "Location for all resources."
+        "description": "Location for WVD metadata resources, which may be limited compared to other resources."
       }
     }
     },

@@ -6,7 +6,7 @@
             "value": "[DesktopAppGroupName]"
         },
         "location": {
-            "value": "[location]"
+            "value": "[wvdMetadataLocation]"
         },
         "appGroupType": {
             "value": "Desktop"
