@@ -33,7 +33,14 @@
                 "description": "Please leave this value as '[utcNow()]', as this is used to generate unique names in the deployment. This is a requirement for resources like a keyvault or storage account."
             },
             "defaultValue": "[utcNow()]"
-        }
+        },
+     "wvdMetadataLocation": {
+      "type": "string",
+      "defaultValue": "westus",
+      "metadata": {
+        "description": "Location for all resources."
+      }
+    }
     },
     "variables": {
          "_artifactsLocation": "https://raw.githubusercontent.com/Eighty20Solutions/wvdquickstart/master",
@@ -46,6 +53,7 @@
         "domainName": "[parameters('domainName')]",
         "identityName": "WVDServicePrincipal",
         "location": "[resourcegroup().location]",
+        "wvdMetadataLocation": "[parameters('wvdMetadataLocation')]",
         "rgName": "[resourcegroup().name]",
         "keyvaultName": "[concat('keyvault', parameters('utcValue'))]",
         "assetsName": "[concat('assets', toLower(skip(parameters('utcValue'), 4)))]",
