@@ -1,0 +1,55 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "imageDefinitionName": {
+            "value": "testimg"
+        },
+        "location": {
+            "value": "westeurope"
+        },
+        "galleryName": {
+            "value": "sigvalidate"
+        },
+        "osType": {
+            "value": "Windows"
+        },
+        "osState": {
+            "value": "Generalized"
+        },
+        "publisher": {
+            "value": "MicrosoftWindowsServer"
+        },
+        "offer": {
+            "value": "WindowsServer"
+        },
+        "sku": {
+            "value": "2019-Datacenter"
+        },
+        "minRecommendedvCPUs": {
+            "value": 2
+        },
+        "maxRecommendedvCPUs": {
+            "value": 8
+        },
+        "minRecommendedMemory": {
+            "value": 4
+        },
+        "maxRecommendedMemory": {
+            "value": 16
+        },
+        "hyperVGeneration": {
+            "value": "V1"
+        },
+        "tags": {
+            "value": {
+                "Environment": "Validation",
+                "Contact": "test.user@testcompany.com",
+                "PurchaseOrder": "",
+                "CostCenter": "",
+                "ServiceName": "DeploymentValidation",
+                "Role": "DeploymentValidation"
+            }
+        }
+    }
+}
