@@ -197,7 +197,7 @@ else {
     Throw
 }
 
-$url = "169.254.169.254", "168.63.129.16"
+$safeUrls = "169.254.169.254", "168.63.129.16"
 foreach($url in $safeUrls) {
     $var = test-netconnection $url -port 80
     if ($var.TcpTestSucceeded) {
