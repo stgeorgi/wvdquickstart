@@ -945,7 +945,7 @@
                 "diagnosticsProfile": {
                     "bootDiagnostics": {
                         "enabled": "[parameters('enableBootDiagnostics')]",
-                        "storageUri": "[concat('https://', if(empty(variables('bootDiagnosticStorageAccountName')), 'dummy', variables('bootDiagnosticStorageAccountName')), '.blob.core.windows.net/')]"
+                        "storageUri": "[concat('https://', if(empty(variables('bootDiagnosticStorageAccountName')), uniqueString(resourceGroup().id, deployment().name), variables('bootDiagnosticStorageAccountName')), '.blob.core.windows.net/')]"
                     }
                 },
                 "availabilitySet": "[if(not(empty(parameters('availabilitySetName'))), json(concat('{\"id\":\"', resourceId('Microsoft.Compute/availabilitySets', parameters('availabilitySetName')),'\"}')), json('null'))]",
