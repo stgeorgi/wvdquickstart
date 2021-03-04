@@ -909,8 +909,8 @@
                             "input": {
                                 "lun": "[copyIndex('dataDisks')]",
                                 "name": "[concat(variables('vmNames')[copyIndex('vmLoop')], '-disk-data-', padLeft(copyIndex('dataDisks',1),2,'0'))]",
-                                "diskSizeGB": "[parameters('dataDisks')[copyIndex('dataDisks')].diskSizeGB]",
                                 "createOption": "[parameters('dataDisks')[copyIndex('dataDisks')].createOption]",
+                                "diskSizeGB": "[parameters('dataDisks')[copyIndex('dataDisks')].diskSizeGB]",                                
                                 "caching": "[parameters('dataDisks')[copyIndex('dataDisks')].caching]",
                                 "managedDisk": {
                                     "storageAccountType": "[parameters('dataDisks')[copyIndex('dataDisks')].managedDisk.storageAccountType]",
