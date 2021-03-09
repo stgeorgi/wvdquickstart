@@ -896,7 +896,7 @@
                     "imageReference": "[parameters('imageReference')]",
                     "osDisk": {
                         "name": "[concat(variables('vmNames')[copyIndex()], '-disk-os-01')]",
-                        "createOption": "fromImage",
+                        "createOption": "FromImage",
                         "diskSizeGB": "128",
                         "managedDisk": {
                             "storageAccountType": "Premium_LRS"
