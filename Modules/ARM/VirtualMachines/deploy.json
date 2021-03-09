@@ -896,10 +896,10 @@
                     "imageReference": "[parameters('imageReference')]",
                     "osDisk": {
                         "name": "[concat(variables('vmNames')[copyIndex()], '-disk-os-01')]",
-                        "createOption": "[parameters('osDisk').createOption]",
-                        "diskSizeGB": "[parameters('osDisk').diskSizeGB]",
+                        "createOption": "fromImage",
+                        "diskSizeGB": "128",
                         "managedDisk": {
-                            "storageAccountType": "[parameters('osDisk').managedDisk.storageAccountType]"
+                            "storageAccountType": "Premium_LRS"
                         }
                     },
                     "copy": [
