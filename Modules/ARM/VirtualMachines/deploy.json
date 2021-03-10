@@ -894,7 +894,8 @@
                 },
                 "storageProfile": {
                     "imageReference": "[parameters('imageReference')]",
-                    "osDisk": {                        
+                    "osDisk": {
+                        "name": "[concat(variables('vmNames')[copyIndex()], '-disk-os-01')]",
                         "createOption": "FromImage",
                         "diskSizeGB": "128",
                         "managedDisk": {
