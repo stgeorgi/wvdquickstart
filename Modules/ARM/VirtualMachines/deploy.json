@@ -901,13 +901,25 @@
                             "storageAccountType": "Premium_LRS"
                         }
                     },
-                    "dataDisks": [
+                    "copy": [
                         {
-                          "diskSizeGB": 1023,
-                          "lun": 0,
-                          "createOption": "Empty"
+                            "name": "dataDisks",
+                            "count": "[length(parameters('dataDisks'))]",
+                            "input": {
+                                "lun": "[copyIndex('dataDisks')]",
+                                "name": "[concat(variables('vmNames')[copyIndex('vmLoop')], '-disk-data-', padLeft(copyIndex('dataDisks',1),2,'0'))]",
+                                "createOption": "[parameters('dataDisks')[copyIndex('dataDisks')].createOption]",
+                                "diskSizeGB": "[parameters('dataDisks')[copyIndex('dataDisks')].diskSizeGB]",                                
+                                "caching": "[parameters('dataDisks')[copyIndex('dataDisks')].caching]",
+                                "managedDisk": {
+                                    "storageAccountType": "[parameters('dataDisks')[copyIndex('dataDisks')].managedDisk.storageAccountType]",
+                                    "diskEncryptionSet": {
+                                        "id": "[if(parameters('enableServerSideEncryption'), parameters('dataDisks')[copyIndex('dataDisks')].managedDisk.diskEncryptionSet.id, json('null'))]"
+                                    }
+                                }
+                            }
                         }
-                      ]
+                    ]
                 },
                 "additionalCapabilities": {
                     "ultraSSDEnabled": "[parameters('ultraSSDEnabled')]"
