@@ -134,14 +134,7 @@
             "metadata": {
                 "description": "Optional. Specifies whether extension operations should be allowed on the virtual machine. This may only be set to False when no extensions are present on the virtual machine."
             }
-        },
-        "requireGuestProvisionSignal": {
-            "type": "bool",
-            "defaultValue": false,
-            "metadata": {
-                "description": "Optional. Specifies whether the guest provision signal is required from the virtual machine."
-            }
-        },
+        },        
         "availabilitySetName": {
             "type": "string",
             "defaultValue": "",
@@ -669,8 +662,7 @@
                 }
             }
         ],
-        "pidName": "[concat('pid-', parameters('cuaId'))]",
-        "bootDiagnosticStorageAccountName": "[if(empty(parameters('bootDiagnosticStorageAccountName')), split(parameters('diagnosticStorageAccountId'), '/')[sub(length(split(parameters('diagnosticStorageAccountId'), '/')), 1)], parameters('bootDiagnosticStorageAccountName'))]",
+        "pidName": "[concat('pid-', parameters('cuaId'))]",        
         "copy": [
             {
                 "name": "vmGeneratedNames",
@@ -941,13 +933,7 @@
                             "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('vmNames')[copyIndex()], '-nic-int-01'))]"
                         }
                     ]
-                },
-                "diagnosticsProfile": {
-                    "bootDiagnostics": {
-                        "enabled": "[parameters('enableBootDiagnostics')]",
-                        "storageUri": "[concat('https://', if(empty(variables('bootDiagnosticStorageAccountName')), uniqueString(resourceGroup().id, deployment().name), variables('bootDiagnosticStorageAccountName')), '.blob.core.windows.net/')]"
-                    }
-                },
+                },               
                 "availabilitySet": "[if(not(empty(parameters('availabilitySetName'))), json(concat('{\"id\":\"', resourceId('Microsoft.Compute/availabilitySets', parameters('availabilitySetName')),'\"}')), json('null'))]",
                 "virtualMachineScaleSet": "[if(not(empty(parameters('scaleSetName'))), json(concat('{\"id\":\"',resourceId('Microsoft.Compute/virtualMachineScaleSets', parameters('scaleSetName')),'\"}')), json('null'))]",
                 "proximityPlacementGroup": "[if(empty(parameters('proximityPlacementGroupName')), json('null'), json(concat('{\"id\":\"', resourceId('Microsoft.Compute/proximityPlacementGroups', parameters('proximityPlacementGroupName')),'\"}')))]",
