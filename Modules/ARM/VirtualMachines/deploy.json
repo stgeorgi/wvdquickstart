@@ -78,7 +78,28 @@
             "metadata": {
                 "description": "Required. When specifying a Windows Virtual Machine, this value should be passed"
             }
-        },                               
+        },       
+        "availabilitySetName": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Optional. Creates an availability set with the given name and adds the VMs to it. Cannot be used in combination with availability zone nor scale set."
+            }
+        },
+        "availabilitySetFaultDomain": {
+            "type": "int",
+            "defaultValue": 2,
+            "metadata": {
+                "description": "Optional. The number of fault domains to use."
+            }
+        },
+        "availabilitySetUpdateDomain": {
+            "type": "int",
+            "defaultValue": 5,
+            "metadata": {
+                "description": "Optional. The number of update domains to use."
+            }
+        },                        
         "subnetId": {
             "type": "String",
             "metadata": {
@@ -513,7 +534,7 @@
                 "osProfile": {
                     "computerName": "[variables('vmNames')[copyIndex()]]",
                     "adminUsername": "[parameters('adminUsername')]",
-                    "adminPassword": "[parameters('adminPassword')]",                                                           
+                    "adminPassword": "[parameters('adminPassword')]"                                                           
                 },
                 "networkProfile": {
                     "networkInterfaces": [
