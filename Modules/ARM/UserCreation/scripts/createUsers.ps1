@@ -140,6 +140,8 @@ Set-Logger "C:\WindowsAzure\Logs\Plugins\Microsoft.Compute.CustomScriptExtension
 
 LogInfo("## 0 - LOAD DATA ##")
 
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 #Fix for TLS
+
 $url = $($artifactsLocation + "/Modules/ARM/UserCreation/Parameters/users.parameters.json")
 Invoke-WebRequest -Uri $url -OutFile "C:\users.parameters.json"
 $ConfigurationJson = Get-Content -Path "C:\users.parameters.json" -Raw -ErrorAction 'Stop'
